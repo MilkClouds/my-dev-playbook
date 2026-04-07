@@ -1,0 +1,22 @@
+{
+  "enabledPlugins": {
+    "oh-my-claudecode@omc": true,
+    "codex@openai-codex": true,
+    "skill-creator@claude-plugins-official": true,
+    "make-bib@make-bib": true
+  },
+  "extraKnownMarketplaces": {
+    "make-bib": {
+      "source": { "source": "github", "repo": "MilkClouds/make-bib" },
+      "autoUpdate": true
+    },
+    "openai-codex": {
+      "source": { "source": "github", "repo": "openai/codex-plugin-cc" },
+      "autoUpdate": true
+    },
+    "anthropic-agent-skills": {
+      "source": { "source": "github", "repo": "anthropics/skills" },
+      "autoUpdate": true
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+    // ===== EDITOR =====
+    "editor.formatOnSave": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    // ===== LATEX =====
+    // "editor.wordWrap": "on", // enable when writing papers
+    "latex-workshop.formatting.latex": "latexindent",
+    // "latex-workshop.docker.enabled": true,
+    // "latex-workshop.docker.image.latex": "texlive/texlive:latest-full",
+    // ===== PYTHON & RUFF =====
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "never",
+            "source.organizeImports.ruff": "explicit"
+        },
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.typeCheckingMode": "standard",
+    "ruff.lineLength": 119,
+    // ===== JAVASCRIPT =====
+    "prettier.enable": false,
+    "[javascript]": {
+        "editor.defaultFormatter": "prettier.prettier-vscode"
+    },
+    // ===== NOTEBOOK =====
+    "notebook.formatOnSave.enabled": true,
+    "notebook.codeActionsOnSave": {
+        "source.fixAll": "never",
+        "source.organizeImports": "explicit"
+    },
+    // ===== WORKBENCH & UI =====
+    "workbench.colorTheme": "Everforest Pro Dark",
+    "workbench.iconTheme": "material-icon-theme",
+    // ===== EXPLORER =====
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "explorer.confirmPasteNative": false,
+    // ===== GIT & GITHUB =====
+    "git.confirmSync": false,
+    "git.autofetch": true,
+    "githubPullRequests.pullBranch": "never",
+    // ===== TERMINAL =====
+    "terminal.integrated.enableMultiLinePasteWarning": "never",
+    "terminal.integrated.suggest.enabled": false,
+    "terminal.integrated.initialHint": false,
+    // ===== SECURITY =====
+    "security.workspace.trust.untrustedFiles": "open",
+    // ===== REMOTE SSH =====
+    "remote.SSH.remotePlatform": {
+        "login-1": "linux",
+        "myblog": "linux",
+        "A100-Zebra": "linux",
+        "DGX-H100-5": "linux"
+    },
+    "remote.SSH.defaultExtensions": [
+        "charliermarsh.ruff",
+        "christian-kohler.path-intellisense",
+        "eamodio.gitlens",
+        "GitHub.copilot-chat",
+        "github.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "mechatroner.rainbow-csv",
+        "ms-azuretools.vscode-docker",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-vscode.makefile-tools",
+        "ms-vsliveshare.vsliveshare",
+        "oderwat.indent-rainbow"
+    ],
+    // ===== Misc =====
+    "claudeCode.disableLoginPrompt": true,
+}
