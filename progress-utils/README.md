@@ -24,6 +24,17 @@ Add `progress-utils` to `plugins=(...)` in `~/.zshrc`.
 
 tqdm (`uv tool install tqdm` or `pip install tqdm`), aria2c, rsync.
 
+## Caveats
+
+`cp_` and `mv_` use rsync, which treats trailing slashes differently from GNU cp/mv:
+
+```bash
+cp_ abcd  dest/   # copies abcd into dest/abcd/ (same as cp)
+cp_ abcd/ dest/   # copies CONTENTS of abcd into dest/ (not same as cp)
+```
+
+With GNU cp, `cp -r abcd/ dest/` and `cp -r abcd dest/` behave identically. With rsync, a trailing slash on the source means "contents of this directory" instead of "the directory itself". Watch out for this when using `cp_` and `mv_`.
+
 ## PU_COUNT
 
 By default, commands start immediately without scanning total size/count. Set `PU_COUNT=1` to pre-scan first, enabling percentage and ETA display. Works with `rm_` and `tar_`.
