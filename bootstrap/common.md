@@ -1,17 +1,17 @@
 # Common Setup
 
-Applies to every new machine. Linux and macOS focused.
+Apply these steps on every new machine. Linux and macOS focused.
 
 ## Shell
 
-zsh with oh-my-zsh, random theme. A different prompt every session keeps things fresh. Plugins:
+Install zsh with oh-my-zsh. Set the theme to `random`. A different prompt every session keeps things fresh. Enable these plugins:
 
 - **git**: well-known aliases (`gst`, `gco`, `gl`, etc.).
 - **zsh-syntax-highlighting**: catches typos before hitting enter.
 - **zsh-autosuggestions**: fish-like history suggestions.
 - **progress-utils**: custom plugin (included in this repo) that wraps cp/mv/rm/tar/wget with progress bars via tqdm and rsync.
 
-One-liner that installs oh-my-zsh, all plugins, and configures the theme:
+Run this one-liner to install oh-my-zsh, all plugins, and configure the theme:
 
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
@@ -27,33 +27,33 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 Prefer isolated/virtualized environments over installing into system runtimes.
 
-- **Python**: [uv](https://github.com/astral-sh/uv). Fast (Rust-based) and all-in-one; replaces pip, venv, and pipx in a single tool. `uv venv`/`uv pip`/`uv run` for projects, `uv tool install` for standalone CLIs.
-- **Python project envs**: [Miniforge](https://github.com/conda-forge/miniforge) (conda-forge). Anaconda is too bloated, and Miniconda has commercial license restrictions. Miniforge is community-maintained and uses conda-forge by default.
-- **Node.js**: [nvm](https://github.com/nvm-sh/nvm). fnm/volta are faster alternatives, but nvm works fine and there's no compelling reason to switch.
-- **JVM**: [sdkman](https://sdkman.io/). Only relevant when a JVM project comes up.
+- **Python**: Install [uv](https://github.com/astral-sh/uv). Fast (Rust-based) and all-in-one; replaces pip, venv, and pipx in a single tool. Use `uv venv`/`uv pip`/`uv run` for projects, `uv tool install` for standalone CLIs.
+- **Python project envs**: Install [Miniforge](https://github.com/conda-forge/miniforge) (conda-forge). Anaconda is too bloated, and Miniconda has commercial license restrictions. Miniforge is community-maintained and uses conda-forge by default.
+- **Node.js**: Install [nvm](https://github.com/nvm-sh/nvm). fnm/volta are faster alternatives, but nvm works fine and there's no compelling reason to switch.
+- **JVM** (optional): Install [sdkman](https://sdkman.io/) when a JVM project comes up.
 
 ## Git
 
-Global config: user name, email, default branch `main`. No commit signing for now. Nice to have, but not worth the hassle of managing keys across multiple machines.
+Configure global settings: user name, email, default branch `main`. Skip commit signing. Nice to have, but not worth the hassle of managing keys across multiple machines.
 
 ## Editor
 
-VS Code. Settings and keybindings: [settings.json](../configs/settings.json), [keybindings.json](../configs/keybindings.json).
+Use VS Code. Apply settings and keybindings from: [settings.json](../configs/settings.json), [keybindings.json](../configs/keybindings.json).
 
 ## Agentic Coding Tools
 
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) is the primary agentic coding tool. Currently the strongest coding model, and Claude Code is its first-party CLI with the deepest integration. Runs in the VS Code integrated terminal over SSH. Enhanced with [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) (`omc`), a multi-agent orchestration layer that provides autopilot, ralph, ultrawork, and team workflows.
+Install [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) as the primary agentic coding tool. Currently the strongest coding model, and Claude Code is its first-party CLI with the deepest integration. Run it in the VS Code integrated terminal over SSH. Set up [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) (`omc`) on top. This is a multi-agent orchestration layer that provides autopilot, ralph, ultrawork, and team workflows.
 
-[Codex](https://github.com/openai/codex) (OpenAI) is a standalone agentic coding tool, also enhanced with [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) for orchestration. The [codex plugin](https://github.com/openai/codex-plugin-cc) allows calling Codex from within Claude Code as a subagent for second opinions.
+Install [Codex](https://github.com/openai/codex) (OpenAI) as a secondary agentic coding tool. Set up [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) (`omx`) on top for orchestration. Install the [codex plugin](https://github.com/openai/codex-plugin-cc) to call Codex from within Claude Code as a subagent for second opinions.
 
-[agf](https://github.com/subinium/agf) (AI Agent Session Finder) helps locate and manage running agent sessions.
+Install [agf](https://github.com/subinium/agf) (AI Agent Session Finder) to locate and manage running agent sessions.
 
-Config files: [claude-plugins.json](../configs/claude-plugins.json), [mcp-servers.json](../configs/mcp-servers.json), [CLAUDE.md](../configs/CLAUDE.md)
+Apply config files: [claude-plugins.json](../configs/claude-plugins.json), [mcp-servers.json](../configs/mcp-servers.json), [CLAUDE.md](../configs/CLAUDE.md)
 
 ## Dev Tools
 
-**tmux**: persistent terminal sessions. Essential for SSH workflows: sessions survive disconnects, and it doubles as a workspace manager for running multiple agent sessions side by side.
+Install **tmux** for persistent terminal sessions. Essential for SSH workflows: sessions survive disconnects, and it doubles as a workspace manager for running multiple agent sessions side by side.
 
-**[glances](https://github.com/nicolargo/glances)**: system-wide monitoring dashboard (CPU, RAM, disk, network, GPU). Use this for a full overview.
+Install **[glances](https://github.com/nicolargo/glances)** for system-wide monitoring (CPU, RAM, disk, network, GPU). Use this for a full overview.
 
-**[gpustat](https://github.com/wookayin/gpustat)**: quick GPU-only utilization check. Use this when you just need a fast `nvidia-smi` replacement.
+Install **[gpustat](https://github.com/wookayin/gpustat)** for quick GPU-only utilization checks. Use this when you just need a fast `nvidia-smi` replacement.

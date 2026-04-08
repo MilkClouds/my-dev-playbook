@@ -1,12 +1,14 @@
 # HPC Node Setup
 
-Run after [common.md](common.md) on cluster nodes.
+Run these steps after [common.md](common.md) on cluster nodes.
 
-## Aliases to add to .zshrc
+## Aliases
 
-Docker aliases for GPU work: `docker-gpu` mounts the current directory as `/workspace` and passes all GPUs through. `docker-gpu-network` adds host networking for when containers need to talk to services on the host (e.g., Jupyter, TensorBoard).
+Add the following to `.zshrc`.
 
-Slurm shortcuts: `SINGLE_GPU` and `MULTI_GPU` are arrays of srun args for the most common job shapes on our cluster (1-GPU with 16 CPUs / 128G, or 8-GPU with 16 CPUs-per-GPU / 1TB). `squeue_` is a wide-format squeue that shows GPU allocation (TRES column) without truncation.
+`docker-gpu` mounts the current directory as `/workspace` and passes all GPUs through. `docker-gpu-network` adds host networking for when containers need to talk to services on the host (e.g., Jupyter, TensorBoard).
+
+`SINGLE_GPU` and `MULTI_GPU` are arrays of srun args for the most common job shapes on our cluster (1-GPU with 16 CPUs / 128G, or 8-GPU with 16 CPUs-per-GPU / 1TB). `squeue_` is a wide-format squeue that shows GPU allocation (TRES column) without truncation.
 
 ```bash
 # Docker GPU containers
@@ -24,4 +26,4 @@ alias squeue_="squeue -O JobID:10,Partition:12,NAME:36,USERNAME:10,STATE:10,TRES
 
 ## smon
 
-[smon](https://github.com/MilkClouds/smon): custom Slurm cluster monitoring TUI. Shows GPU/CPU/memory allocation across all nodes at a glance, with job-level drill-down. Better than `squeue_` when you need the full cluster picture.
+Install [smon](https://github.com/MilkClouds/smon), a custom Slurm cluster monitoring TUI. Shows GPU/CPU/memory allocation across all nodes at a glance, with job-level drill-down. Use this instead of `squeue_` when you need the full cluster picture.
