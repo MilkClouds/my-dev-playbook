@@ -13,12 +13,18 @@ Oh-my-zsh plugin that adds progress bars to common file operations.
 
 ## Install
 
+The plugin is a single file, so clone to a temp dir, copy it out, and discard the clone:
+
 ```bash
-git clone https://github.com/MilkClouds/my-dev-playbook ~/.my-dev-playbook
-ln -s ~/.my-dev-playbook/progress-utils ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/progress-utils
+tmp=$(mktemp -d) && \
+  git clone --depth=1 https://github.com/MilkClouds/my-dev-playbook "$tmp" && \
+  dest="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/progress-utils" && \
+  mkdir -p "$dest" && \
+  cp "$tmp/progress-utils/progress-utils.plugin.zsh" "$dest/" && \
+  rm -rf "$tmp"
 ```
 
-Add `progress-utils` to `plugins=(...)` in `~/.zshrc`.
+Add `progress-utils` to `plugins=(...)` in `~/.zshrc`. To update later, re-run the same block.
 
 ## Dependencies
 
