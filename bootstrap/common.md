@@ -17,8 +17,11 @@ Run this one-liner to install oh-my-zsh, all plugins, and configure the theme:
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
   && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting \
   && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
-  && git clone https://github.com/MilkClouds/my-dev-playbook ~/.my-dev-playbook \
-  && ln -s ~/.my-dev-playbook/progress-utils ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/progress-utils \
+  && tmp=$(mktemp -d) \
+  && git clone --depth=1 https://github.com/MilkClouds/my-dev-playbook "$tmp" \
+  && mkdir -p ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/progress-utils \
+  && cp "$tmp/progress-utils/progress-utils.plugin.zsh" ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/progress-utils/ \
+  && rm -rf "$tmp" \
   && sed -i 's/^plugins=(.*/plugins=(git zsh-syntax-highlighting zsh-autosuggestions progress-utils)/' ~/.zshrc \
   && sed -i 's/^ZSH_THEME=".*/ZSH_THEME="random"/' ~/.zshrc
 ```
