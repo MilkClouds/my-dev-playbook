@@ -41,16 +41,6 @@ cp_ abcd/ dest/   # copies CONTENTS of abcd into dest/ (not same as cp)
 
 With GNU cp, `cp -r abcd/ dest/` and `cp -r abcd dest/` behave identically. With rsync, a trailing slash on the source means "contents of this directory" instead of "the directory itself". Watch out for this when using `cp_` and `mv_`.
 
-### Symlinks
-
-`rm_` and `mv_` match GNU `rm` / `mv` semantics and **never follow symlinks** into their target directories:
-
-- `rm_ link` and `rm_ link/` both just unlink the symlink itself; the linked directory's contents are preserved.
-- `mv_ link dest/` and `mv_ link/ dest/` both move the symlink itself (falls back to GNU `mv` internally).
-- `rm_ dir` with symlinks inside deletes `dir` and unlinks the inner symlinks, but never touches the files they point to.
-
-This is important because naive `find dir/ -delete` or `rsync -a link/` will dereference a trailing-slash'd symlink argument and recurse into the target — potentially wiping out files you did not intend to touch. `rm_` and `mv_` are explicitly hardened against this.
-
 ## PU_COUNT
 
 By default, commands start immediately without scanning total size/count. Set `PU_COUNT=1` to pre-scan first, enabling percentage and ETA display. Works with `rm_` and `tar_`.
