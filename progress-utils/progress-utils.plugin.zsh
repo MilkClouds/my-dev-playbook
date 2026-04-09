@@ -30,21 +30,50 @@ alias cp_='rsync -a --partial --info=progress2'
 # --- Functions ---
 
 mv_() {
-    rsync -a --partial --info=progress2 --remove-source-files "$@"
+    (( $# < 2 )) && { echo "mv_: need at least one source and a destination" >&2; return 1; }
+    local dest="${@: -1}"
     local n=$(( $# - 1 ))
-    local src
+    local src stripped
+    local real_srcs=()
     for src in "${@:1:$n}"; do
-        [ -d "$src" ] && find "$src" -depth -type d -empty -delete 2>/dev/null
+        stripped="${src%/}"
+        # Symlinks: fall back to GNU mv. rsync with a trailing-slash'd symlink
+        # dereferences into the target directory, which would move (and then
+        # unlink) the files inside the link's target — very much not what mv does.
+        if [ -L "$stripped" ]; then
+            mv -- "$stripped" "$dest" || return $?
+        else
+            real_srcs+=("$stripped")
+        fi
     done
+    if (( ${#real_srcs[@]} > 0 )); then
+        rsync -a --partial --info=progress2 --remove-source-files "${real_srcs[@]}" "$dest"
+        for src in "${real_srcs[@]}"; do
+            [ -d "$src" ] && find "$src" -depth -type d -empty -delete 2>/dev/null
+        done
+    fi
 }
 
 rm_() {
-    local target
+    local target stripped rc
     for target in "$@"; do
-        [ -e "$target" ] || [ -L "$target" ] || continue
-        local tqdm_args=(--desc "Deleting $target" --unit files)
-        [[ -n "$PU_COUNT" ]] && tqdm_args+=(--total "$(find "$target" | _pu_tqdm --desc "Counting $target" --unit files 2>/dev/tty | wc -l)")
-        find "$target" -delete -print | _pu_tqdm "${tqdm_args[@]}" > /dev/null
+        stripped="${target%/}"
+        [ -e "$stripped" ] || [ -L "$stripped" ] || continue
+        # Symlinks: just unlink the link itself, never descend into the target.
+        # `find symlink/ -delete` would follow the link (POSIX trailing-slash
+        # rule) and delete files inside the symlink's target directory.
+        if [ -L "$stripped" ]; then
+            rm -- "$stripped" || return $?
+            continue
+        fi
+        local tqdm_args=(--desc "Deleting $stripped" --unit files)
+        [[ -n "$PU_COUNT" ]] && tqdm_args+=(--total "$(find "$stripped" | _pu_tqdm --desc "Counting $stripped" --unit files 2>/dev/tty | wc -l)")
+        # rm -rf uses FTS_PHYSICAL, so it never follows symlinks regardless of
+        # trailing slash or internal links. Output format is locale-dependent,
+        # so pin LC_ALL=C for reproducibility (tqdm only counts lines either way).
+        LC_ALL=C rm -rfv -- "$stripped" | _pu_tqdm "${tqdm_args[@]}" > /dev/null
+        rc=${pipestatus[1]}
+        [ "$rc" -ne 0 ] && return "$rc"
     done
 }
 
