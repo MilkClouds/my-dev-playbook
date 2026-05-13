@@ -1,0 +1,6 @@
+{
+  "skillListingBudgetFraction": 1,
+  "env": {
+    "ENABLE_TOOL_SEARCH": "false"
+  }
+}
