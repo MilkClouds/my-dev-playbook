@@ -13,8 +13,9 @@ Personal development environment setup. Linux and macOS focused.
 
 Start with common, then add environment-specific setup.
 
-1. **[bootstrap/common.md](bootstrap/common.md)**: Shell, package managers, editor, AI coding agents, environment variables. Every machine.
+1. **[bootstrap/common.md](bootstrap/common.md)**: Shell, package managers, editor, AI coding agents. Every machine.
 2. **[bootstrap/hpc.md](bootstrap/hpc.md)**: Slurm aliases, smon, Docker GPU aliases. Cluster nodes.
+3. **[bootstrap/env-vars.md](bootstrap/env-vars.md)**: User-level env vars via `environment.d`; MANPATH and SLURM exceptions.
 
 ## Skills
 
