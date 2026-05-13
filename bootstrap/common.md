@@ -83,13 +83,13 @@ Layered stack: a base agentic CLI per provider, an orchestration layer on top, a
 
 - <a id="claude-code-stack"></a>**Claude Code stack** (primary):
   - **[Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)** *(minimal)*: Anthropic's first-party agentic coding CLI.
-  - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) (`omc`)** *(minimal)*: Multi-agent orchestration layer on top of Claude Code. Provides autopilot, ralph, ultrawork, and team workflows.
+  - **[claude-pace](https://github.com/Astro-Han/claude-pace)** *(minimal)*: Single-file bash statusline showing 5h/7d quota usage with pace delta, context bar, and git diff stats.
   - **Configs** *(minimal)* — apply after Claude Code is installed; all three configure Claude Code itself:
-    - [`claude-plugins.json`](../configs/claude-plugins.json) — Plugin marketplace enablement. Turns on `oh-my-claudecode` (`omc`), [`skill-creator`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), [`make-bib`](https://github.com/MilkClouds/make-bib), and the [`codex` plugin](https://github.com/openai/codex-plugin-cc) (lets you call Codex from within Claude Code as a subagent for second opinions — only takes effect when the [Codex stack](#codex-stack) below is also installed).
+    - [`claude-plugins.json`](../configs/claude-plugins.json) — Plugin marketplace enablement. Turns on [`claude-pace`](https://github.com/Astro-Han/claude-pace), [`skill-creator`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), [`make-bib`](https://github.com/MilkClouds/make-bib), and the [`codex` plugin](https://github.com/openai/codex-plugin-cc) (lets you call Codex from within Claude Code as a subagent for second opinions — only takes effect when the [Codex stack](#codex-stack) below is also installed).
     - [`mcp-servers.json`](../configs/mcp-servers.json) — MCP servers wired into Claude Code: [`context7`](https://github.com/upstash/context7), [`perplexity`](https://github.com/perplexityai/modelcontextprotocol), [`github`](https://github.com/github/github-mcp-server), [`arxiv-mcp-server`](https://github.com/blazickjp/arxiv-mcp-server), [`semantic-scholar-mcp`](https://github.com/MilkClouds/semantic-scholar-mcp), [`pdf-reader`](https://github.com/SylphxAI/pdf-reader-mcp), [`sequential-thinking`](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking), [`notion-mcp-server`](https://github.com/makenotion/notion-mcp-server).
     - [`CLAUDE.md`](../configs/CLAUDE.md) — User-level Claude Code memory file. Global instructions, language preference, environment constraints.
 - <a id="codex-stack"></a>**Codex stack** (secondary):
   - **[Codex](https://github.com/openai/codex)** *(as-needed)*: OpenAI's first-party agentic coding CLI; secondary tool for second-opinion runs.
-  - **[oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) (`omx`)** *(as-needed)*: Orchestration layer on top of Codex. Mirrors what `omc` does for Claude Code. Requires Codex.
+  - **[oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) (`omx`)** *(as-needed)*: Multi-agent orchestration layer on top of Codex. Requires Codex.
 - **Cross-cutting**:
   - **[agf](https://github.com/subinium/agf)** *(full)*: AI Agent Session Finder — locates and manages running agent sessions across both CLIs.

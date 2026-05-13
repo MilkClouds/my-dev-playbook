@@ -1,9 +1,9 @@
 {
   "enabledPlugins": {
-    "oh-my-claudecode@omc": true,
     "codex@openai-codex": true,
     "skill-creator@claude-plugins-official": true,
-    "make-bib@make-bib": true
+    "make-bib@make-bib": true,
+    "claude-pace@claude-pace": true
   },
   "extraKnownMarketplaces": {
     "make-bib": {
@@ -16,6 +16,10 @@
     },
     "anthropic-agent-skills": {
       "source": { "source": "github", "repo": "anthropics/skills" },
+      "autoUpdate": true
+    },
+    "claude-pace": {
+      "source": { "source": "github", "repo": "Astro-Han/claude-pace" },
       "autoUpdate": true
     }
   }
