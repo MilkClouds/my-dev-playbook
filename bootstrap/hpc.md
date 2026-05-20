@@ -27,3 +27,16 @@ alias squeue_="squeue -O JobID:10,Partition:12,NAME:36,USERNAME:10,STATE:10,TRES
 ## smon
 
 Install [smon](https://github.com/MilkClouds/smon), a custom Slurm cluster monitoring TUI. Shows GPU/CPU/memory allocation across all nodes at a glance, with job-level drill-down. Use this instead of `squeue_` when you need the full cluster picture.
+
+## VS Code Remote-SSH
+
+Cluster nodes share `~` over NFS, so they share one `~/.vscode-server`. When the VS Code client updates, every node races to migrate that folder to the new server version at once — the concurrent writes corrupt it and Remote-SSH breaks (`Refused to connect to unsupported server`, dropped connections, runaway `command-shell` processes).
+
+Redirect the folder to node-local disk. The symlink lives on the shared home, but its target is an absolute path, so each node resolves it to its own `/var/tmp`.
+
+```bash
+rm -rf ~/.vscode-server   # run once from any node
+ln -s /var/tmp/vscode-server-$USER ~/.vscode-server
+```
+
+VS Code recreates the target on first connect. `/var/tmp` is node-local and reboot-persistent; the OS may prune it after ~30 days idle, costing one re-download. Close all VS Code windows before running this, or an active client will recreate `~/.vscode-server` as a real directory.
