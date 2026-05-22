@@ -7,7 +7,7 @@ Remove [oh-my-claudecode](https://github.com/oh-my-claudecode/oh-my-claudecode) 
 1. **OS**: Linux / macOS / Windows (git-bash). Windows users should run `python` (the `python3` on `PATH` is often the Microsoft Store stub).
 2. **`jq`**: claude-pace requires it. `which jq` — if missing, see [Step 8](#8-install-jq-if-missing).
 3. **Scattered `.omc/` scope**: run `find ~ -maxdepth 7 -type d -name ".omc"` first and decide whether to wipe everything or only your workspace. Sync folders (OneDrive, iCloud, Dropbox) may hold per-project notepads/research you want to keep.
-4. **Plugin-installed OMC?**: `grep -E "enabledPlugins|oh-my-claudecode" ~/.claude/settings.json`. If OMC is registered in `enabledPlugins`, [Step 5](#5-update-settingsjson--plugin-metadata) is mandatory — otherwise Claude Code re-installs it on next plugin reload.
+4. **Plugin-installed OMC?**: `grep -E "enabledPlugins|oh-my-claudecode" ~/.claude/settings.json`. If OMC is registered in `enabledPlugins`, [Step 6](#6-update-settingsjson--plugin-metadata) is mandatory — otherwise Claude Code re-installs it on next plugin reload.
 
 ## Pitfalls
 
@@ -15,7 +15,7 @@ Remove [oh-my-claudecode](https://github.com/oh-my-claudecode/oh-my-claudecode) 
 - **`.omc-managed` skill directories**: `~/.claude/skills/<name>/.omc-managed` marks an OMC-owned skill. Removing only the marker leaves the skill orphaned; remove the whole directory.
 - **`find -exec rm -rf {} +` returns exit 0 even on partial failure**: synced or non-ASCII paths sometimes fail. Re-scan in [Step 7](#7-verify) and retry individual paths.
 - **Windows `cp949` stdout**: Python `print` of non-ASCII characters (em-dash, etc.) crashes on Windows shells. Use `PYTHONIOENCODING=utf-8` and ASCII-only.
-- **Windows statusLine command**: `~/.claude/statusline.sh` in `settings.json` may not work — Windows Claude Code may not expand `~` or execute `.sh` directly. [Step 5](#5-update-settingsjson--plugin-metadata) writes an absolute `bash <path>` wrapper on Windows.
+- **Windows statusLine command**: `~/.claude/statusline.sh` in `settings.json` may not work — Windows Claude Code may not expand `~` or execute `.sh` directly. [Step 6](#6-update-settingsjson--plugin-metadata) writes an absolute `bash <path>` wrapper on Windows.
 
 ## 1. Survey (read-only)
 
@@ -75,7 +75,28 @@ awk 'NF || p {print; p=1}' ~/.claude/CLAUDE.md > /tmp/cm && mv /tmp/cm ~/.claude
 rm -f ~/.claude/CLAUDE.md.bak
 ```
 
-## 5. Update settings.json + plugin metadata
+## 5. Install claude-pace
+
+Install before configuring ([Step 6](#6-update-settingsjson--plugin-metadata)) so the version can be read from the plugin manifest instead of hardcoded.
+
+```bash
+mkdir -p ~/.claude/plugins/marketplaces
+git clone --depth=1 https://github.com/Astro-Han/claude-pace.git ~/.claude/plugins/marketplaces/claude-pace
+
+# Version-agnostic: derive the version from the plugin manifest rather than hardcoding it.
+# Use .claude-plugin/plugin.json — claude-pace's marketplace.json carries a separate,
+# often-stale "metadata.version" that is NOT the plugin version.
+VERSION=$(jq -r .version ~/.claude/plugins/marketplaces/claude-pace/.claude-plugin/plugin.json)
+DEST=~/.claude/plugins/cache/claude-pace/claude-pace/$VERSION
+mkdir -p "$DEST"
+cp -r ~/.claude/plugins/marketplaces/claude-pace/. "$DEST/"
+rm -rf "$DEST/.git"
+
+curl -fsSL -o ~/.claude/statusline.sh https://raw.githubusercontent.com/Astro-Han/claude-pace/main/claude-pace.sh
+chmod +x ~/.claude/statusline.sh
+```
+
+## 6. Update settings.json + plugin metadata
 
 ```bash
 PYTHONIOENCODING=utf-8 python <<'PY'
@@ -83,6 +104,10 @@ import json, os, platform
 from datetime import datetime, timezone
 home = os.path.expanduser("~/.claude")
 now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+# Version-agnostic: read the version from the manifest cloned in Step 5.
+with open(f"{home}/plugins/marketplaces/claude-pace/.claude-plugin/plugin.json", encoding="utf-8") as f:
+    version = json.load(f)["version"]
 
 # Windows: ~/.sh exec is not guaranteed in statusLine command
 if platform.system() == "Windows":
@@ -109,8 +134,8 @@ if os.path.exists(ip):
     d.setdefault("plugins", {}).pop("oh-my-claudecode@omc", None)
     d["plugins"]["claude-pace@claude-pace"] = [{
         "scope": "user",
-        "installPath": f"{home}/plugins/cache/claude-pace/claude-pace/0.6.0",
-        "version": "0.6.0", "installedAt": now, "lastUpdated": now,
+        "installPath": f"{home}/plugins/cache/claude-pace/claude-pace/{version}",
+        "version": version, "installedAt": now, "lastUpdated": now,
     }]
     with open(ip, "w", encoding="utf-8") as f: json.dump(d, f, indent=2)
     print("B) installed_plugins.json updated")
@@ -131,21 +156,6 @@ if os.path.exists(km):
 else:
     print("C) known_marketplaces.json not present - skipped")
 PY
-```
-
-## 6. Install claude-pace
-
-```bash
-mkdir -p ~/.claude/plugins/marketplaces
-git clone --depth=1 https://github.com/Astro-Han/claude-pace.git ~/.claude/plugins/marketplaces/claude-pace
-
-DEST=~/.claude/plugins/cache/claude-pace/claude-pace/0.6.0
-mkdir -p "$DEST"
-cp -r ~/.claude/plugins/marketplaces/claude-pace/. "$DEST/"
-rm -rf "$DEST/.git"
-
-curl -fsSL -o ~/.claude/statusline.sh https://raw.githubusercontent.com/Astro-Han/claude-pace/main/claude-pace.sh
-chmod +x ~/.claude/statusline.sh
 ```
 
 ## 7. Verify
