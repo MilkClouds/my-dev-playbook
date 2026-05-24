@@ -5,6 +5,7 @@ Personal development environment setup. Linux and macOS focused.
 ## What's Included
 
 - **[bootstrap/](bootstrap/)**: Environment setup guides (shell, editors, cluster tools).
+- **[recipes/](recipes/)**: Optional setups for specific scenarios.
 - **[configs/](configs/)**: VS Code settings, keybindings, Claude Code plugins, MCP servers, CLAUDE.md directives.
 - **[progress-utils/](progress-utils/)**: Oh-my-zsh plugin for progress bars on cp/mv/rm/tar/wget.
 - **[.claude/skills/](.claude/skills/)**: Claude Code skills.
@@ -16,6 +17,13 @@ Start with common, then add environment-specific setup.
 1. **[bootstrap/common.md](bootstrap/common.md)**: Shell, package managers, editor, AI coding agents. Every machine.
 2. **[bootstrap/hpc.md](bootstrap/hpc.md)**: Slurm aliases, smon, Docker GPU aliases, VS Code Remote-SSH. Cluster nodes.
 3. **[bootstrap/env-vars.md](bootstrap/env-vars.md)**: User-level env vars via `environment.d`; MANPATH and SLURM exceptions.
+
+## Recipes
+
+Optional, scenario-specific setups. Apply only when you need them.
+
+- **[recipes/mobile-tmux/](recipes/mobile-tmux/)**: Authenticated mobile browser access to tmux via `ttyd` + cookie auth proxy.
+- **[recipes/windows.md](recipes/windows.md)**: Windows 11 package install method decisions (installer / pixi / choco). *Experimental.*
 
 ## Skills
 
