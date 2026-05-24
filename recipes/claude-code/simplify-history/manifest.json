@@ -1,0 +1,152 @@
+[
+  {
+    "file": "01-2.1.63-to-2.1.70.md",
+    "versions": [
+      "2.1.63",
+      "2.1.64",
+      "2.1.66",
+      "2.1.67",
+      "2.1.68",
+      "2.1.69",
+      "2.1.70"
+    ],
+    "len": 2983,
+    "sha": "28171eb4eae2",
+    "name": "simplify",
+    "aliases": null,
+    "argumentHint": null,
+    "description": "Review changed code for reuse, quality, and efficiency, then fix any issues found."
+  },
+  {
+    "file": "02-2.1.71-to-2.1.71.md",
+    "versions": [
+      "2.1.71"
+    ],
+    "len": 3153,
+    "sha": "c196c75035d1",
+    "name": "simplify",
+    "aliases": null,
+    "argumentHint": null,
+    "description": "Review changed code for reuse, quality, and efficiency, then fix any issues found."
+  },
+  {
+    "file": "03-2.1.72-to-2.1.80.md",
+    "versions": [
+      "2.1.72",
+      "2.1.73",
+      "2.1.74",
+      "2.1.75",
+      "2.1.76",
+      "2.1.77",
+      "2.1.78",
+      "2.1.79",
+      "2.1.80"
+    ],
+    "len": 3581,
+    "sha": "9243700abb35",
+    "name": "simplify",
+    "aliases": null,
+    "argumentHint": null,
+    "description": "Review changed code for reuse, quality, and efficiency, then fix any issues found."
+  },
+  {
+    "file": "04-2.1.81-to-2.1.114.md",
+    "versions": [
+      "2.1.81",
+      "2.1.83",
+      "2.1.84",
+      "2.1.85",
+      "2.1.86",
+      "2.1.87",
+      "2.1.89",
+      "2.1.90",
+      "2.1.91",
+      "2.1.92",
+      "2.1.94",
+      "2.1.96",
+      "2.1.97",
+      "2.1.98",
+      "2.1.100",
+      "2.1.101",
+      "2.1.104",
+      "2.1.105",
+      "2.1.107",
+      "2.1.108",
+      "2.1.109",
+      "2.1.110",
+      "2.1.111",
+      "2.1.112",
+      "2.1.113",
+      "2.1.114"
+    ],
+    "len": 3833,
+    "sha": "10a5c7811960",
+    "name": "simplify",
+    "aliases": null,
+    "argumentHint": null,
+    "description": "Review changed code for reuse, quality, and efficiency, then fix any issues found."
+  },
+  {
+    "file": "05-2.1.116-to-2.1.145.md",
+    "versions": [
+      "2.1.116",
+      "2.1.117",
+      "2.1.118",
+      "2.1.119",
+      "2.1.120",
+      "2.1.121",
+      "2.1.122",
+      "2.1.123",
+      "2.1.124",
+      "2.1.126",
+      "2.1.128",
+      "2.1.129",
+      "2.1.131",
+      "2.1.132",
+      "2.1.133",
+      "2.1.136",
+      "2.1.137",
+      "2.1.138",
+      "2.1.139",
+      "2.1.140",
+      "2.1.141",
+      "2.1.142",
+      "2.1.143",
+      "2.1.144",
+      "2.1.145"
+    ],
+    "len": 4035,
+    "sha": "21eabbd86301",
+    "name": "simplify",
+    "aliases": null,
+    "argumentHint": null,
+    "description": "Review changed code for reuse, quality, and efficiency, then fix any issues found."
+  },
+  {
+    "file": "06-2.1.146-to-2.1.146.md",
+    "versions": [
+      "2.1.146"
+    ],
+    "len": 4025,
+    "sha": "fff955bea0a9",
+    "name": "code-review",
+    "aliases": "\"simplify\"",
+    "argumentHint": "[low|medium|high|xhigh|max]",
+    "description": "Review changed code for reuse, quality, and efficiency, then fix any issues found."
+  },
+  {
+    "file": "07-2.1.147-to-2.1.150.md",
+    "versions": [
+      "2.1.147",
+      "2.1.148",
+      "2.1.149",
+      "2.1.150"
+    ],
+    "len": 567,
+    "sha": "903627fe9580",
+    "name": "code-review",
+    "aliases": "\"simplify\"",
+    "argumentHint": "[low|medium|high|xhigh|max] [--comment] [<target>]",
+    "description": "Review the current diff for correctness bugs at the given effort level (low/medium: fewer, high-confidence findings; high\\u2192max: broader coverage, may include uncertain findings). Pass --comment to post findings as inline PR comments."
+  }
+]
