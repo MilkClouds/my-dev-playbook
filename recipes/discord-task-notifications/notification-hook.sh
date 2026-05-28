@@ -3,6 +3,10 @@
 # Claude Code fires this when it actually needs the user (permission prompt,
 # idle prompt, auth events). Unlike Stop, this is the "real" attention signal.
 input=$(cat)
+# Skip idle_prompt (fires every ~2 min while idle); other subtypes pass.
+notification_type=$(jq -r '.notification_type // ""' <<<"$input")
+[ "$notification_type" = "idle_prompt" ] && exit 0
+
 sid=$(jq -r '.session_id // "default"' <<<"$input")
 message=$(jq -r '.message // ""' <<<"$input")
 title=$(jq -r '.title // "Claude Code needs you"' <<<"$input")

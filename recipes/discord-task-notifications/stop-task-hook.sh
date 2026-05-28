@@ -42,10 +42,8 @@ ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 last_ai=""; model=""; branch=""; tools_value=""
 tokens_str=""; cost_str=""; files_str=""; stop_reason=""
 if [ -n "$transcript" ] && [ -f "$transcript" ]; then
-  # Use ccusage-worv pricing catalog if installed (~/.claude/plugins/...).
-  # That catalog tracks per-model prices accurately (Opus 4.7 = $5/$25/M,
-  # not the old Opus 4 = $15/$75). Falls back to 0 if catalog missing or
-  # model unknown, so cost just hides instead of being misleading.
+  # Pricing catalog: first hit under ~/.claude/plugins/marketplaces/*/shared/.
+  # Schema = ccusage (github.com/ryoppippi/ccusage). Missing → cost hides.
   CATALOG=
   for c in ~/.claude/plugins/marketplaces/*/shared/pricing-catalog.json; do
     [ -f "$c" ] && CATALOG=$c && break

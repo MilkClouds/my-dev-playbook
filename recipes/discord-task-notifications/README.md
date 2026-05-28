@@ -2,7 +2,7 @@
 
 Three Claude Code hooks that post Discord webhook embeds when a turn takes ≥30s
 and you're away from the terminal. Includes per-turn token usage and accurate
-USD cost via the local ccusage pricing catalog. Designed for long-running tasks
+USD cost via a per-model pricing catalog (read from disk). Designed for long-running tasks
 where you want to step away and get pinged.
 
 ## What you get
@@ -104,7 +104,7 @@ Merge into the existing `hooks` block (don't replace; preserves any plugin hooks
     ],
     "Notification": [
       {
-        "matcher": "*",
+        "matcher": "permission_prompt|auth_success|elicitation_dialog|elicitation_response",
         "hooks": [
           {
             "type": "command",
@@ -158,11 +158,15 @@ Both files in `/tmp/`:
 
 The strongest open-source examples treat **`Notification`** (not `Stop`) as
 the right trigger for "ping me when something needs me." `Notification` fires
-only when Claude actually blocks (permission prompt, idle prompt, etc.); the
-matcher accepts `permission_prompt`, `idle_prompt`, `auth_success`, or `"*"`.
+on a few subtypes — `permission_prompt`, `auth_success`,
+`elicitation_dialog`, `elicitation_response`, and `idle_prompt`. The last one
+fires every ~2 minutes whenever the user is idle and is almost always noise;
+both the recommended matcher (`permission_prompt|auth_success|elicitation_*`)
+and the script itself skip `idle_prompt`.
 
 We register both: Stop with debounce (for "long task done") + Notification
-with `*` (for "Claude is waiting").
+narrowed to the real attention signals (for "Claude is blocked waiting on
+you").
 
 ### Per-turn parsing from the transcript JSONL
 
@@ -182,25 +186,22 @@ The full transcript can be 70k+ lines; we `tail -n 2000` first to bound
 memory + CPU. Per-turn iteration uses one `[$turn[] | select(.type ==
 "assistant")] as $ax` binding instead of re-walking the slice 6 times.
 
-### Accurate cost via ccusage pricing catalog
+### Accurate cost via a local pricing catalog
 
-[ccusage](https://github.com/ryoppippi/ccusage) maintains per-model prices
-from [LiteLLM](https://github.com/BerriAI/litellm). The
-[ccusage-worv](https://github.com/MaumAI-Company/ccusage-worv) Claude Code
-plugin ships that catalog locally at
-`~/.claude/plugins/marketplaces/worv/shared/pricing-catalog.json`. The Stop
-hook reads it on each fire and passes `--argjson catalog` to jq:
+The Stop hook expects a per-model pricing catalog on disk, glob-matched at
+`~/.claude/plugins/marketplaces/*/shared/pricing-catalog.json`. The schema is
+the one used by [ccusage](https://github.com/ryoppippi/ccusage) (in turn
+sourced from [LiteLLM](https://github.com/BerriAI/litellm)) — any Claude Code
+plugin that ships that file will work; first match wins.
 
 ```jq
 ($catalog.modelPricing[$mfull] // {input:0, output:0, cacheRead:0, cacheWrite:0}) as $pr
 | (($tin*$pr.input + $tout*$pr.output + $tcr*$pr.cacheRead + $tcc*$pr.cacheWrite) / 1000000) as $cost
 ```
 
-Falls back to **zero** (cost field hidden) if catalog is missing or model
-isn't in it. Better than displaying a wrong number.
-
-If you don't use ccusage-worv, cost just won't appear. Token counts still
-show.
+Falls back to **zero** (cost field hidden) if no catalog is found or the
+model isn't in it. Better than displaying a wrong number — token counts
+still show.
 
 ## Tunables
 
@@ -213,7 +214,7 @@ show.
 | Token tail window | `tail -n 2000` | 2000 lines | Higher = more transcript history scanned |
 | Color | `CLAUDE_ORANGE=14251863` (Stop) / `URGENT_RED=15158332` (Notification) | — | Decimal of `0xRRGGBB` |
 | Bot nickname | `--arg username "Waddle Dee"` | "Waddle Dee" | Per-message Discord override |
-| Notification matcher | `"matcher": "*"` in `settings.json` | all | Narrow to `permission_prompt` to hide `auth_success` etc. |
+| Notification matcher | `"matcher": "permission_prompt\|auth_success\|elicitation_dialog\|elicitation_response"` in `settings.json` | (no idle_prompt) | Add `\|idle_prompt` if you actually want the 2-min idle reminders |
 
 ## Gotchas
 
@@ -250,9 +251,8 @@ tabs. Newline join is safe because every text field passes through
 ### Cost was 3× too high before ccusage catalog
 
 Hardcoded Opus prices started as `[15, 75, 1.50, 18.75]` (old Opus 4). Opus
-4.5 / 4.6 / 4.7 are actually `[5, 25, 0.50, 6.25]`. The catalog covers all
-the per-version differences correctly and auto-updates when ccusage-worv
-updates.
+4.5 / 4.6 / 4.7 are actually `[5, 25, 0.50, 6.25]`. A current catalog covers all the per-version differences correctly and
+refreshes whenever its source plugin updates.
 
 ### Cache write 5min vs 1h pricing
 
@@ -262,7 +262,7 @@ assumed. Heavy 1-hour-cache users will see costs underestimated by up to 60%.
 
 ### Long-context (>200K) tier pricing
 
-Sonnet 4 charges 2× input/output above 200K context. The worv catalog
+Sonnet 4 charges 2× input/output above 200K context. This catalog
 schema doesn't expose `above_200k` fields (ccusage's Rust source does,
 from LiteLLM). Not modeled here. Opus 4.5+ pricing is flat across context
 sizes, so this only matters if you use Sonnet 4 (legacy).
@@ -283,6 +283,5 @@ the totals ourselves.
 
 - ccusage and its pricing approach: https://github.com/ryoppippi/ccusage
 - LiteLLM model pricing data: https://github.com/BerriAI/litellm
-- ccusage-worv plugin (local catalog source): https://github.com/MaumAI-Company/ccusage-worv
 - `Notification` hook prior art: https://github.com/wyattjoh/claude-code-notification
 - Concrete embed-shape reference: https://github.com/book000/dotfiles (`home/dot_claude/scripts/completion-notify/`)
