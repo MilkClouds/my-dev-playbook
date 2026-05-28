@@ -1,6 +1,6 @@
 # Discord Task-Completion Notifications
 
-Three Claude Code hooks that post Discord webhook embeds when a turn takes ≥60s
+Three Claude Code hooks that post Discord webhook embeds when a turn takes ≥30s
 and you're away from the terminal. Includes per-turn token usage and accurate
 USD cost via the local ccusage pricing catalog. Designed for long-running tasks
 where you want to step away and get pinged.
@@ -9,7 +9,7 @@ where you want to step away and get pinged.
 
 | Trigger | Color | When | Debounced |
 |---|---|---|---|
-| Stop hook (task complete) | 🟠 Claude orange | Turn ≥ 60s ends AND no new prompt within 8s | yes |
+| Stop hook (task complete) | 🟠 Claude orange | Turn ≥ 30s ends AND no new prompt within 8s | yes |
 | Notification hook (input needed) | 🔴 Red | Claude waiting on you (permission prompt, idle prompt, etc.) | no |
 | UserPromptSubmit hook | — | Internal; records start time for the Stop hook | — |
 
@@ -143,7 +143,7 @@ you're actively at the terminal: every "ok" gets a notification.
 
 Two layers solve this:
 
-1. **Threshold**: skip if `elapsed < 60s` (short Q&A doesn't ping).
+1. **Threshold**: skip if `elapsed < 30s` (short Q&A doesn't ping).
 2. **Debounce**: when Stop fires, sleep 8s. If `UserPromptSubmit` writes a
    newer timestamp during the sleep (= you typed a follow-up), abort.
 
@@ -207,7 +207,7 @@ show.
 | Knob | Location | Default | Effect |
 |---|---|---|---|
 | Threshold | `DEBOUNCE_SECS=8` in `stop-task-hook.sh` | 8s | Higher = quieter, more latency |
-| Threshold | `[ "$elapsed" -ge 60 ] \|\| exit 0` | 60s | Lower = more pings, also for short tasks |
+| Threshold | `[ "$elapsed" -ge 30 ] \|\| exit 0` | 30s | Lower = more pings, also for short tasks |
 | Last-reply length | `clip(500)` | 500 chars | Discord field-value limit is 1024 |
 | Tool count cap | `.[:8]` | 8 | Top-N tools shown; rest hidden |
 | Token tail window | `tail -n 2000` | 2000 lines | Higher = more transcript history scanned |

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Stop hook → Discord embed when:
-#   1. elapsed >= 60s (long task), AND
+#   1. elapsed >= 30s (long task), AND
 #   2. user did not submit a new prompt during a short debounce window
 #      (= they're not actively at the terminal).
 # Intentionally never includes the user's own prompt — keep that local.
@@ -20,7 +20,7 @@ f="/tmp/claude-task-start-${sid}"
 start=$(cat "$f")
 rm -f "$f"
 elapsed=$(( $(date +%s) - start ))
-[ "$elapsed" -ge 60 ] || exit 0
+[ "$elapsed" -ge 30 ] || exit 0
 
 # Debounce: sleep, then bail if a new UserPromptSubmit landed after we fired.
 stop_time=$(date +%s)
