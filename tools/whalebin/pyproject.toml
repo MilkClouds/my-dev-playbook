@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "whalebin"
+version = "0.1.0"
+description = "Expose binaries from docker images as host CLI commands (pixi global / uv tool, but for docker)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "MilkClouds" }]
+keywords = ["docker", "cli", "wrapper", "pixi", "uv-tool"]
+
+[project.scripts]
+whalebin = "whalebin.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["whalebin"]
