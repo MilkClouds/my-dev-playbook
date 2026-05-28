@@ -62,7 +62,12 @@ def save_manifest(data: dict) -> None:
 
 def wrapper_content(env_name: str, image: str, bin_name: str, mounts: list[str]) -> str:
     bind_lines = "".join(f"    --bind {shlex.quote(m)} \\\n" for m in mounts)
+    # `: ${VAR:=...}` only sets the storage path if the caller hasn't already.
+    # Baked here so cluster nodes don't need shell-rc setup for ch-image to find
+    # an NFS-shared storage; node-local /var/tmp default would fragment across nodes.
     return f"""{WRAPPER_HEADER} (env: {env_name}, image: {image})
+: "${{CH_IMAGE_STORAGE:=$HOME/.cache/charliecloud}}"
+export CH_IMAGE_STORAGE
 exec ch-run \\
     --unset-env=PATH --set-env="PATH={CONTAINER_PATH}" \\
     --cd "$PWD" \\
