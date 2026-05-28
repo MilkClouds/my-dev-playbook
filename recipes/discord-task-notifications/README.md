@@ -9,9 +9,9 @@ where you want to step away and get pinged.
 
 | Trigger | Color | When | Debounced |
 |---|---|---|---|
-| Stop hook (task complete) | 🟠 Claude orange | Turn ≥ 30s ends AND no new prompt within 8s | yes |
+| Stop hook (task complete) | 🟠 Claude orange | Turn ≥ 30s ends AND no new prompt during debounce window (8s for human turns, 300s for Monitor-driven turns — see [Monitor-aware turn handling](#monitor-aware-turn-handling)) | yes |
 | Notification hook (input needed) | 🔴 Red | Claude waiting on you (permission prompt, idle prompt, etc.) | no |
-| UserPromptSubmit hook | — | Internal; records start time for the Stop hook | — |
+| UserPromptSubmit hook | — | Internal; records prompt timestamps for the Stop hook | — |
 
 Embed fields (Stop hook):
 
@@ -144,15 +144,28 @@ you're actively at the terminal: every "ok" gets a notification.
 Two layers solve this:
 
 1. **Threshold**: skip if `elapsed < 30s` (short Q&A doesn't ping).
-2. **Debounce**: when Stop fires, sleep 8s. If `UserPromptSubmit` writes a
-   newer timestamp during the sleep (= you typed a follow-up), abort.
+2. **Debounce**: when Stop fires, sleep N seconds. If `UserPromptSubmit` writes
+   a newer timestamp during the sleep (= a new prompt arrived), abort.
 
-Both files in `/tmp/`:
+Two files in `/tmp/`, both keyed on session_id:
 
-- `claude-task-start-${session_id}` — written by UserPromptSubmit, consumed
-  (`rm`'d) by Stop's elapsed check.
-- `claude-last-prompt-${session_id}` — written by UserPromptSubmit, read by
-  Stop's debounce check. Cleaned up after the Stop hook sends a notification.
+- `claude-task-start-${sid}` — anchors elapsed. Set by `UserPromptSubmit`
+  **only for human-typed prompts**; left alone for synthetic injections (see
+  next section). Persistent across Stops — overwritten on the next human
+  prompt, so it always points at "when the current human turn began."
+- `claude-last-prompt-${sid}` — set by `UserPromptSubmit` on **every** prompt
+  (human or synthetic). Read by Stop's debounce check.
+
+### Monitor-aware turn handling
+
+Monitor injects each background-task event as a `<task-notification>` user
+message with `origin.kind: "task-notification"`. Without filtering, those
+reset `task-start` mid-workflow (elapsed wrong) and shrink the `$turn` slice
+to just the last event (cost wrong). `start-task-hook.sh` skips them for
+`task-start`; the cost parser drops them from `real_user`; and Stop uses a
+300s debounce when the last submission was a task-notification so only the
+workflow's final Stop fires, with metrics cumulative since the last human
+prompt.
 
 ### Notification vs Stop — the community consensus
 
@@ -207,11 +220,12 @@ still show.
 
 | Knob | Location | Default | Effect |
 |---|---|---|---|
-| Threshold | `DEBOUNCE_SECS=8` in `stop-task-hook.sh` | 8s | Higher = quieter, more latency |
+| Threshold | `DEBOUNCE_HUMAN=8` in `stop-task-hook.sh` | 8s | Wait window for human-typed turn endings |
+| Threshold | `DEBOUNCE_TASKNOTIF=300` in `stop-task-hook.sh` | 300s | Wait window for Monitor-driven turn endings — longer so only the workflow's final Stop fires |
 | Threshold | `[ "$elapsed" -ge 30 ] \|\| exit 0` | 30s | Lower = more pings, also for short tasks |
 | Last-reply length | `clip(500)` | 500 chars | Discord field-value limit is 1024 |
 | Tool count cap | `.[:8]` | 8 | Top-N tools shown; rest hidden |
-| Token tail window | `tail -n 2000` | 2000 lines | Higher = more transcript history scanned |
+| Token tail window | `tail -n 5000` | 5000 lines | Higher = more transcript history scanned; Monitor-heavy workflows can push the last human prompt past a small window |
 | Color | `CLAUDE_ORANGE=14251863` (Stop) / `URGENT_RED=15158332` (Notification) | — | Decimal of `0xRRGGBB` |
 | Bot nickname | `--arg username "Waddle Dee"` | "Waddle Dee" | Per-message Discord override |
 | Notification matcher | `"matcher": "permission_prompt\|auth_success\|elicitation_dialog\|elicitation_response"` in `settings.json` | (no idle_prompt) | Add `\|idle_prompt` if you actually want the 2-min idle reminders |

@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# Stop hook → Discord embed when:
-#   1. elapsed >= 30s (long task), AND
-#   2. user did not submit a new prompt during a short debounce window
-#      (= they're not actively at the terminal).
-# Intentionally never includes the user's own prompt — keep that local.
+# Stop hook → Discord embed when elapsed >= 30s and no new prompt during
+# debounce. Monitor-driven turns use a long debounce so only the final Stop
+# (after the workflow quiets down) notifies, with cumulative metrics.
 
-DEBOUNCE_SECS=8
+DEBOUNCE_HUMAN=8
+DEBOUNCE_TASKNOTIF=300
 
 input=$(cat)
 IFS=$'\t' read -r sid stop_active transcript < <(
@@ -18,16 +17,21 @@ IFS=$'\t' read -r sid stop_active transcript < <(
 f="/tmp/claude-task-start-${sid}"
 [ -f "$f" ] || exit 0
 start=$(cat "$f")
-rm -f "$f"
 elapsed=$(( $(date +%s) - start ))
 [ "$elapsed" -ge 30 ] || exit 0
 
-# Debounce: sleep, then bail if a new UserPromptSubmit landed after we fired.
+DEBOUNCE_SECS=$DEBOUNCE_HUMAN
+if [ -n "$transcript" ] && [ -f "$transcript" ]; then
+  last_origin=$(tail -n 200 "$transcript" 2>/dev/null | jq -sr '
+    [.[] | select(.type == "user")] | last | .origin?.kind? // ""' 2>/dev/null)
+  [ "$last_origin" = "task-notification" ] && DEBOUNCE_SECS=$DEBOUNCE_TASKNOTIF
+fi
+
+# Debounce: sleep, then bail if any new prompt (real or synthetic) landed.
 stop_time=$(date +%s)
 sleep "$DEBOUNCE_SECS"
 last_prompt=$(cat "/tmp/claude-last-prompt-${sid}" 2>/dev/null || echo 0)
 [ "$last_prompt" -gt "$stop_time" ] && exit 0
-rm -f "/tmp/claude-last-prompt-${sid}"
 
 url=$(cat ~/.claude/discord-webhook-url 2>/dev/null)
 [ -n "$url" ] || exit 0
@@ -36,9 +40,7 @@ dir=$(basename "$PWD")
 duration=$(printf '%dm %ds' $((elapsed / 60)) $((elapsed % 60)))
 ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-# All transcript-derived fields in one jq pass over the last ~2000 lines.
-# Slurping the full file is multi-second on long sessions; the last turn is
-# always near the tail. 2000 lines covers many tool-heavy turns.
+# All transcript-derived fields in one jq pass; tail bounds memory + CPU.
 last_ai=""; model=""; branch=""; tools_value=""
 tokens_str=""; cost_str=""; files_str=""; stop_reason=""
 if [ -n "$transcript" ] && [ -f "$transcript" ]; then
@@ -50,13 +52,12 @@ if [ -n "$transcript" ] && [ -f "$transcript" ]; then
   done
   catalog_json=$(cat "$CATALOG" 2>/dev/null)
   [ -z "$catalog_json" ] && catalog_json='{"modelPricing":{}}'
-  # gsub removes any embedded newlines from text fields, so each field is
-  # one line in jq output. Each element wrapped in extra parens to dodge
-  # jq comma/pipe precedence which otherwise inflates the array length.
-  parsed=$(tail -n 2000 "$transcript" 2>/dev/null | jq -sr \
+  # real_user excludes <task-notification> so $turn anchors at the human prompt.
+  parsed=$(tail -n 5000 "$transcript" 2>/dev/null | jq -sr \
     --argjson catalog "$catalog_json" '
     def real_user($e):
       ($e.type == "user")
+      and (($e.origin?.kind? // "") != "task-notification")
       and (($e.message?.content?) as $c
            | $c != null
              and (($c|type) == "string"
