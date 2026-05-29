@@ -52,9 +52,12 @@ TUI and the panel breaks.
 Bonus, run lazygit in a tmux popup (`~/.tmux.conf`):
 
 ```tmux
-# prefix + g: lazygit over the current session, q to close
-bind g display-popup -E -w 90% -h 90% "lazygit"
+# prefix + g: lazygit in a popup, in the current pane's dir (q to close)
+bind g display-popup -E -d "#{pane_current_path}" -w 90% -h 90% "lazygit"
 ```
+
+`-d "#{pane_current_path}"` is needed — without it the popup opens in tmux's
+default dir (often `$HOME`), so lazygit reports "not in a git repository".
 
 ### 3. Claude Code `!` — `~/.zshrc`
 
