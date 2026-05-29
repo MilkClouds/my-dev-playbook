@@ -36,7 +36,17 @@ last_prompt=$(cat "/tmp/claude-last-prompt-${sid}" 2>/dev/null || echo 0)
 url=$(cat ~/.claude/discord-webhook-url 2>/dev/null)
 [ -n "$url" ] || exit 0
 
-dir=$(basename "$PWD")
+# Resolve the real project name even inside a linked worktree (claude --worktree,
+# claude agents); ${PWD##*/} alone would show the random worktree name instead.
+project=${PWD##*/}
+worktree=""
+# --path-format=absolute so --git-common-dir is absolute even from a subdir.
+{ IFS= read -r toplevel; IFS= read -r common; } < <(git rev-parse --path-format=absolute --show-toplevel --git-common-dir 2>/dev/null)
+if [ -n "$toplevel" ]; then
+  main_root=${common%/*}
+  project=${main_root##*/}
+  [ "$toplevel" != "$main_root" ] && worktree=${toplevel##*/}
+fi
 duration=$(printf '%dm %ds' $((elapsed / 60)) $((elapsed % 60)))
 ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
@@ -122,12 +132,19 @@ if [ -n "$transcript" ] && [ -f "$transcript" ]; then
   } <<<"$parsed"
 fi
 
+# Mobile push shows only the title (fields are desktop-only), so the title
+# carries the project + duration for a glanceable summary.
+status="✅"
+[ -n "$stop_reason" ] && status="⚠️"
+title="$status $project · $duration"
+
 CLAUDE_ORANGE=14251863  # 0xD97757
 
 payload=$(jq -nc \
   --arg username "Waddle Dee" \
-  --arg title "✅ $duration" \
-  --arg dir "$dir" \
+  --arg title "$title" \
+  --arg project "$project" \
+  --arg worktree "$worktree" \
   --arg branch "$branch" \
   --arg model "$model" \
   --arg tools "$tools_value" \
@@ -145,7 +162,8 @@ payload=$(jq -nc \
       title: $title,
       color: $color,
       fields: (
-        [{name: "Directory", value: ("`" + $dir + "`"), inline: true}]
+        [{name: "Project", value: ("`" + $project + "`"), inline: true}]
+        + (if $worktree != "" then [{name: "Worktree", value: ("`" + $worktree + "`"), inline: true}] else [] end)
         + (if $branch != "" then [{name: "Branch", value: ("`" + $branch + "`"), inline: true}] else [] end)
         + (if $model  != "" then [{name: "Model",  value: ("`" + $model  + "`"), inline: true}] else [] end)
         + (if ($cost != "" or $tokens != "")

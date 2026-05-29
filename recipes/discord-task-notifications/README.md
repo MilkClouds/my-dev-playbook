@@ -18,9 +18,9 @@ Embed fields (Stop hook):
 ```
 [orange bar]
 Claude Code · Task complete
-✅ 4m 40s
+✅ my-project · 4m 40s                       ← title: project + duration (shows in mobile push)
 
-Directory     Branch      Model         💰 Cost
+Project       Branch      Model         💰 Cost
 `my-project`  `main`      `opus-4-7`    **$0.42** · in:1.2K out:3.4K cache_r:8.9K cache_w:175
 
 🛠 Tools
@@ -36,6 +36,16 @@ First 500 chars of Claude's final message...
 
 Claude Code · Stop hook        · 10:54
 ```
+
+Mobile push notifications render only the embed **title** (fields are
+desktop-only), so the title leads with the project name + duration — the
+glanceable summary lands on your phone, the full metrics/reply stay in the
+fields for the desktop client.
+
+Inside a linked worktree (`claude --worktree`, `claude agents`), `${PWD##*/}`
+is a random worktree name (e.g. `bubbly-roaming-star`). Both hooks resolve the
+real repo name via `git rev-parse --git-common-dir` for the title, and surface
+the worktree leaf in a separate **Worktree** field.
 
 The user's prompt is **never** echoed back to Discord. Keep that local.
 

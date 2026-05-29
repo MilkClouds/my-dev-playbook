@@ -15,7 +15,21 @@ transcript=$(jq -r '.transcript_path // ""' <<<"$input")
 url=$(cat ~/.claude/discord-webhook-url 2>/dev/null)
 [ -n "$url" ] || exit 0
 
-dir=$(basename "$PWD")
+# Resolve the real project name even inside a linked worktree (claude --worktree,
+# claude agents); ${PWD##*/} alone would show the random worktree name instead.
+project=${PWD##*/}
+worktree=""
+# --path-format=absolute so --git-common-dir is absolute even from a subdir.
+{ IFS= read -r toplevel; IFS= read -r common; } < <(git rev-parse --path-format=absolute --show-toplevel --git-common-dir 2>/dev/null)
+if [ -n "$toplevel" ]; then
+  main_root=${common%/*}
+  project=${main_root##*/}
+  [ "$toplevel" != "$main_root" ] && worktree=${toplevel##*/}
+fi
+
+body="$message"
+[ -z "$body" ] && body="$title"
+
 branch=""
 if [ -n "$transcript" ] && [ -f "$transcript" ]; then
   # gitBranch is on virtually every entry; last 50 lines is plenty.
@@ -33,9 +47,9 @@ URGENT_RED=15158332  # 0xE74C3C
 payload=$(jq -nc \
   --arg username "Waddle Dee" \
   --arg content "$content" \
-  --arg title "$title" \
-  --arg desc "$message" \
-  --arg dir "$dir" \
+  --arg title "⛔ $project" \
+  --arg desc "$body" \
+  --arg worktree "$worktree" \
   --arg branch "$branch" \
   --arg ts "$ts" \
   --argjson color "$URGENT_RED" \
@@ -48,8 +62,8 @@ payload=$(jq -nc \
       description: $desc,
       color: $color,
       fields: (
-        [{name: "Directory", value: ("`" + $dir + "`"), inline: true}]
-        + (if $branch != "" then [{name: "Branch", value: ("`" + $branch + "`"), inline: true}] else [] end)
+        (if $branch != "" then [{name: "Branch", value: ("`" + $branch + "`"), inline: true}] else [] end)
+        + (if $worktree != "" then [{name: "Worktree", value: ("`" + $worktree + "`"), inline: true}] else [] end)
       ),
       footer: {text: "Claude Code · Notification hook"},
       timestamp: $ts
