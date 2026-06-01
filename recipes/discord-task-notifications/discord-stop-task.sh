@@ -6,10 +6,18 @@
 DEBOUNCE_HUMAN=8
 DEBOUNCE_TASKNOTIF=300
 
+# Config dir: honor CLAUDE_CONFIG_DIR if Claude Code's config was relocated.
+CFG="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+DATA="$CFG/data/discord-task-notifications"
+
 input=$(cat)
-IFS=$'\t' read -r sid stop_active transcript < <(
-  jq -r '[.session_id // "default", (.stop_hook_active // false | tostring), .transcript_path // ""] | @tsv' <<<"$input"
-)
+# One jq emitting each field on its own line (not @tsv, which doubles backslashes
+# in Windows paths — breaking [ -f "$transcript" ] — and whose trailing field
+# carries jq.exe's CRLF); strip CR once. Harmless on *nix.
+{ IFS= read -r sid; IFS= read -r stop_active; IFS= read -r transcript; } < <(
+  jq -r '(.session_id // "default"),
+         (.stop_hook_active // false),
+         (.transcript_path // "")' <<<"$input" | tr -d '\r')
 
 # Avoid recursive Stop loops (when our hook itself triggers another Stop).
 [ "$stop_active" = "true" ] && exit 0
@@ -23,7 +31,7 @@ elapsed=$(( $(date +%s) - start ))
 DEBOUNCE_SECS=$DEBOUNCE_HUMAN
 if [ -n "$transcript" ] && [ -f "$transcript" ]; then
   last_origin=$(tail -n 200 "$transcript" 2>/dev/null | jq -sr '
-    [.[] | select(.type == "user")] | last | .origin?.kind? // ""' 2>/dev/null)
+    [.[] | select(.type == "user")] | last | .origin?.kind? // ""' 2>/dev/null | tr -d '\r')
   [ "$last_origin" = "task-notification" ] && DEBOUNCE_SECS=$DEBOUNCE_TASKNOTIF
 fi
 
@@ -33,7 +41,7 @@ sleep "$DEBOUNCE_SECS"
 last_prompt=$(cat "/tmp/claude-last-prompt-${sid}" 2>/dev/null || echo 0)
 [ "$last_prompt" -gt "$stop_time" ] && exit 0
 
-url=$(cat ~/.claude/discord-webhook-url 2>/dev/null)
+url=$(cat "$DATA/webhook-url" 2>/dev/null)
 [ -n "$url" ] || exit 0
 
 # Resolve the real project name even inside a linked worktree (claude --worktree,
@@ -41,7 +49,7 @@ url=$(cat ~/.claude/discord-webhook-url 2>/dev/null)
 project=${PWD##*/}
 worktree=""
 # --path-format=absolute so --git-common-dir is absolute even from a subdir.
-{ IFS= read -r toplevel; IFS= read -r common; } < <(git rev-parse --path-format=absolute --show-toplevel --git-common-dir 2>/dev/null)
+{ IFS= read -r toplevel; IFS= read -r common; } < <(git rev-parse --path-format=absolute --show-toplevel --git-common-dir 2>/dev/null | tr -d '\r')
 if [ -n "$toplevel" ]; then
   main_root=${common%/*}
   project=${main_root##*/}
@@ -54,12 +62,30 @@ ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 last_ai=""; model=""; branch=""; tools_value=""
 tokens_str=""; cost_str=""; files_str=""; stop_reason=""
 if [ -n "$transcript" ] && [ -f "$transcript" ]; then
-  # Pricing catalog: first hit under ~/.claude/plugins/marketplaces/*/shared/.
+  # Lightweight auto-refresh: if our self-managed catalog hasn't had a successful
+  # refresh in 14 days (or never), kick off a detached background update from
+  # LiteLLM. Non-blocking — this turn uses the current file; new prices land next
+  # time. No-op if the refresh script isn't installed.
+  REFRESH="$CFG/hooks/discord-refresh-pricing.sh"
+  if [ -f "$REFRESH" ]; then
+    last_refresh=$(cat "$DATA/.last-refresh" 2>/dev/null | tr -dc 0-9)
+    # 1209600s = 14 days; keep in sync with MAX_AGE in discord-refresh-pricing.sh.
+    if [ -z "$last_refresh" ] || [ $(( $(date +%s) - last_refresh )) -ge 1209600 ]; then
+      nohup bash "$REFRESH" >/dev/null 2>&1 &
+      disown 2>/dev/null || true
+    fi
+  fi
+
+  # Pricing catalog: our self-managed file first (independent of any plugin),
+  # then fall back to a ccusage-style catalog shipped under marketplaces/*/shared.
   # Schema = ccusage (github.com/ryoppippi/ccusage). Missing → cost hides.
-  CATALOG=
-  for c in ~/.claude/plugins/marketplaces/*/shared/pricing-catalog.json; do
-    [ -f "$c" ] && CATALOG=$c && break
-  done
+  CATALOG="$DATA/pricing-catalog.json"
+  if [ ! -f "$CATALOG" ]; then
+    CATALOG=
+    for c in "$CFG"/plugins/marketplaces/*/shared/pricing-catalog.json; do
+      [ -f "$c" ] && CATALOG=$c && break
+    done
+  fi
   catalog_json=$(cat "$CATALOG" 2>/dev/null)
   [ -z "$catalog_json" ] && catalog_json='{"modelPricing":{}}'
   # real_user excludes <task-notification> so $turn anchors at the human prompt.
@@ -88,7 +114,9 @@ if [ -n "$transcript" ] && [ -f "$transcript" ]; then
     | (([$u[] | .output_tokens // 0]           | add // 0)) as $tout
     | (([$u[] | .cache_read_input_tokens // 0] | add // 0)) as $tcr
     | (([$u[] | .cache_creation_input_tokens // 0] | add // 0)) as $tcc
-    | ($catalog.modelPricing[$mfull] // {input:0, output:0, cacheRead:0, cacheWrite:0}) as $pr
+    | (($mfull | sub("-[0-9]{8}$"; "")) as $mkey
+       | $catalog.modelPricing[$mfull] // $catalog.modelPricing[$mkey]
+         // {input:0, output:0, cacheRead:0, cacheWrite:0}) as $pr
     | (($tin*$pr.input + $tout*$pr.output + $tcr*$pr.cacheRead + $tcc*$pr.cacheWrite) / 1000000) as $cost
     | [
         (([$ax[] | .message.content[]?
@@ -114,12 +142,12 @@ if [ -n "$transcript" ] && [ -f "$transcript" ]; then
          | unique
          | (length as $n
             | if   $n == 0 then ""
-              elif $n <= 5 then "\($n): " + (map(sub("^.*/"; "")) | join(", "))
+              elif $n <= 5 then "\($n): " + (map(sub("^.*[/\\\\]"; "")) | join(", "))
               else "\($n) files modified" end)),
         (([$ax[] | .message.stop_reason? // empty] | last // "")
          | if . == "max_tokens" or . == "refusal" then . else "" end)
       ] | join("\n")
-  ' 2>/dev/null)
+  ' 2>/dev/null | tr -d '\r')
   {
     IFS= read -r last_ai
     IFS= read -r model
@@ -183,4 +211,7 @@ payload=$(jq -nc \
     }]
   }')
 
-curl -s -m 10 -H "Content-Type: application/json" -d "$payload" "$url" >/dev/null 2>&1 || true
+# Pass the payload over stdin (--data-binary @-), not as a -d argument: on
+# Windows the native curl mangles multibyte UTF-8 (emoji, ·) in argv, which
+# Discord rejects as invalid JSON. stdin avoids argv entirely. Safe on *nix too.
+printf '%s' "$payload" | curl -s -m 10 -H "Content-Type: application/json" --data-binary @- "$url" >/dev/null 2>&1 || true

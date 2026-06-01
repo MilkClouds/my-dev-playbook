@@ -1,0 +1,4 @@
+# Shell scripts must keep LF line endings. CRLF breaks the `#!` shebang and
+# `\r`-mangles parsing under bash (including Git Bash on Windows), which would
+# defeat the cross-platform hook scripts shipped in recipes/.
+*.sh text eol=lf

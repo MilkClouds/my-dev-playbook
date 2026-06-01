@@ -51,13 +51,22 @@ The user's prompt is **never** echoed back to Discord. Keep that local.
 
 ## Files
 
+Everything lives under Claude Code's config dir (`$CLAUDE_CONFIG_DIR`, default
+`~/.claude`), following its conventions: hook scripts in `hooks/`, recipe data
+scoped under `data/discord-task-notifications/`. Nothing is written to the
+Claude-owned `cache/` dir, and nothing clutters the config-dir root. Paths below
+use `~/.claude` for brevity.
+
 | Path | Role |
 |---|---|
-| `~/.claude/discord-webhook-url` | Webhook URL, perm 600. Separate from `settings.json` for tighter perms on shared hosts. |
-| `~/.claude/discord-mention-id` *(optional)* | Your Discord user ID. When present, the Notification hook prepends `<@ID>` to content — forces mobile push even on muted channels. |
-| `~/.claude/start-task-hook.sh` | UserPromptSubmit hook. Records start time + last-prompt time. |
-| `~/.claude/stop-task-hook.sh` | Stop hook. Debounce → parse last turn → ccusage cost → Discord. |
-| `~/.claude/notification-hook.sh` | Notification hook. Immediate red embed. |
+| `~/.claude/hooks/discord-start-task.sh` | UserPromptSubmit hook. Records start time + last-prompt time. |
+| `~/.claude/hooks/discord-stop-task.sh` | Stop hook. Debounce → parse last turn → cost → Discord. |
+| `~/.claude/hooks/discord-notification.sh` | Notification hook. Immediate red embed. |
+| `~/.claude/hooks/discord-refresh-pricing.sh` | Helper (not a hook). Refreshes the catalog from LiteLLM. Run by hand or auto-triggered by the Stop hook every 14 days. |
+| `~/.claude/data/discord-task-notifications/webhook-url` | Webhook URL, perm 600. Kept out of `settings.json` for tighter perms on shared hosts. |
+| `~/.claude/data/discord-task-notifications/mention-id` *(optional)* | Your Discord user ID. When present, the Notification hook prepends `<@ID>` to content — forces mobile push even on muted channels. |
+| `~/.claude/data/discord-task-notifications/pricing-catalog.json` | Self-managed per-model price table for the 💰 cost field. Independent of any plugin; ships with this recipe; auto-refreshed. |
+| `~/.claude/data/discord-task-notifications/.last-refresh`, `.refresh.lock` | Catalog refresh state + lock (managed automatically). |
 | `~/.claude/settings.json` | Registers the three hooks. |
 
 ## Install
@@ -67,20 +76,27 @@ The user's prompt is **never** echoed back to Discord. Keep that local.
 Server → channel settings → **Integrations** → **Webhooks** → **New Webhook** →
 copy URL. (You need *Manage Channel* permission. A self-only server works fine.)
 
-### 2. Save the URL
+### 2. Create the directories + save the URL
 
 ```bash
+CFG="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+DATA="$CFG/data/discord-task-notifications"
+mkdir -p "$CFG/hooks" "$DATA"
 umask 077
-printf '%s' 'https://discord.com/api/webhooks/...' > ~/.claude/discord-webhook-url
+printf '%s' 'https://discord.com/api/webhooks/...' > "$DATA/webhook-url"
 ```
 
-### 3. Drop the hook scripts in place
+### 3. Drop the scripts and the price table in place
 
 From this recipe directory:
 
 ```bash
-cp start-task-hook.sh stop-task-hook.sh notification-hook.sh ~/.claude/
-chmod +x ~/.claude/{start,stop,notification}-task-hook.sh
+# Hook scripts (+ the refresh helper) → hooks/
+cp discord-start-task.sh discord-stop-task.sh discord-notification.sh \
+   discord-refresh-pricing.sh "$CFG/hooks/"
+chmod +x "$CFG"/hooks/discord-*.sh
+# Self-managed price table for the cost field (no plugin dependency) → data/
+cp pricing-catalog.json "$DATA/pricing-catalog.json"
 ```
 
 ### 4. Register the hooks in `~/.claude/settings.json`
@@ -95,7 +111,7 @@ Merge into the existing `hooks` block (don't replace; preserves any plugin hooks
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/start-task-hook.sh",
+            "command": "~/.claude/hooks/discord-start-task.sh",
             "async": true
           }
         ]
@@ -106,7 +122,7 @@ Merge into the existing `hooks` block (don't replace; preserves any plugin hooks
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/stop-task-hook.sh",
+            "command": "~/.claude/hooks/discord-stop-task.sh",
             "async": true
           }
         ]
@@ -118,7 +134,7 @@ Merge into the existing `hooks` block (don't replace; preserves any plugin hooks
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/notification-hook.sh",
+            "command": "~/.claude/hooks/discord-notification.sh",
             "async": true
           }
         ]
@@ -131,13 +147,26 @@ Merge into the existing `hooks` block (don't replace; preserves any plugin hooks
 If the current Claude Code session doesn't pick up the new hooks immediately,
 open `/hooks` once — the settings watcher reloads on that menu open.
 
+**Windows (Git Bash):** Windows can't exec a `.sh` directly and `~` isn't
+reliably expanded by the hook runner, so wrap each command in `bash` with an
+absolute, forward-slash path — same as the `statusLine` command form:
+
+```json
+"command": "bash C:/Users/<you>/.claude/hooks/discord-stop-task.sh"
+```
+
+Apply the same `bash C:/Users/<you>/.claude/hooks/…` form to all three hooks.
+The scripts themselves are identical across platforms; only this registration
+line differs. (`jq`, `curl`, and `bash` must be on `PATH` — Git for Windows ships
+`bash`/`curl`; install `jq` separately, e.g. `pixi global install jq`.)
+
 ### 5. (Optional) Mobile push for "input needed"
 
 ```bash
 # Discord → User Settings → Advanced → Developer Mode (on)
 # Right-click your username → "Copy User ID"
-echo 'YOUR_USER_ID' > ~/.claude/discord-mention-id
-chmod 600 ~/.claude/discord-mention-id
+echo 'YOUR_USER_ID' > "$DATA/mention-id"   # $DATA from step 2
+chmod 600 "$DATA/mention-id"
 ```
 
 When this file exists, the Notification hook prepends `<@ID>` to the message
@@ -171,7 +200,7 @@ Two files in `/tmp/`, both keyed on session_id:
 Monitor injects each background-task event as a `<task-notification>` user
 message with `origin.kind: "task-notification"`. Without filtering, those
 reset `task-start` mid-workflow (elapsed wrong) and shrink the `$turn` slice
-to just the last event (cost wrong). `start-task-hook.sh` skips them for
+to just the last event (cost wrong). `discord-start-task.sh` skips them for
 `task-start`; the cost parser drops them from `real_user`; and Stop uses a
 300s debounce when the last submission was a task-notification so only the
 workflow's final Stop fires, with metrics cumulative since the last human
@@ -209,13 +238,47 @@ The full transcript can be 70k+ lines; we `tail -n 2000` first to bound
 memory + CPU. Per-turn iteration uses one `[$turn[] | select(.type ==
 "assistant")] as $ax` binding instead of re-walking the slice 6 times.
 
-### Accurate cost via a local pricing catalog
+### Accurate cost via a self-managed pricing catalog
 
-The Stop hook expects a per-model pricing catalog on disk, glob-matched at
-`~/.claude/plugins/marketplaces/*/shared/pricing-catalog.json`. The schema is
-the one used by [ccusage](https://github.com/ryoppippi/ccusage) (in turn
-sourced from [LiteLLM](https://github.com/BerriAI/litellm)) — any Claude Code
-plugin that ships that file will work; first match wins.
+The Stop hook reads a per-model pricing catalog on disk. Resolution order:
+
+1. `~/.claude/data/discord-task-notifications/pricing-catalog.json` — the
+   **self-managed** file shipped with this recipe (`pricing-catalog.json`). This
+   is the source of truth; it needs no plugin and is auto-refreshed (below).
+2. Fallback: first hit of `~/.claude/plugins/marketplaces/*/shared/pricing-catalog.json`
+   (e.g. a plugin that vendors [ccusage](https://github.com/ryoppippi/ccusage)'s
+   catalog) — only used if the file above is absent.
+
+The schema is ccusage's `modelPricing` map (in turn sourced from
+[LiteLLM](https://github.com/BerriAI/litellm)): keys are model ids, values are
+`{input, output, cacheRead, cacheWrite}` in USD per million tokens. The hook
+strips a trailing `-YYYYMMDD` from the transcript's model id before lookup, so
+dated ids (e.g. `claude-haiku-4-5-20251001`) match the short keys in the
+shipped catalog. The shipped seed was verified against
+<https://platform.claude.com/docs/en/docs/about-claude/pricing>.
+
+### Keeping the catalog current (auto-refresh)
+
+`discord-refresh-pricing.sh` pulls Anthropic's `claude-*` prices from
+[LiteLLM's price feed](https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json)
+— the same data ccusage uses — and **merges them over** the existing catalog:
+upstream entries win, and any model you added by hand that LiteLLM doesn't list
+yet is preserved. Cache prices missing upstream fall back to Anthropic's
+documented multipliers (read `0.1×` input, 5-minute write `1.25×` input). Writes
+are atomic and validated, so a failed or empty download leaves the current
+catalog untouched.
+
+- **Automatic**: the Stop hook checks the last-refresh timestamp
+  (`~/.claude/data/discord-task-notifications/.last-refresh`) and, if it's older than 14 days (or
+  missing), kicks off the refresh **detached in the background** (`nohup … &`).
+  The current turn's notification is never delayed — new prices land for the next
+  one. The script self-throttles (skips if a successful refresh ran < 14 days
+  ago) and lock-guards against concurrent runs, so the trigger is cheap to fire.
+- **Manual**: `bash ~/.claude/hooks/discord-refresh-pricing.sh` (add `--force` to
+  bypass the 14-day throttle). Prints a one-line summary to stderr.
+- **Brand-new model not in LiteLLM yet**: cost silently falls back to hidden
+  (token counts still show). Add a short key by hand to
+  `~/.claude/data/discord-task-notifications/pricing-catalog.json`; the next refresh keeps it.
 
 ```jq
 ($catalog.modelPricing[$mfull] // {input:0, output:0, cacheRead:0, cacheWrite:0}) as $pr
@@ -230,8 +293,8 @@ still show.
 
 | Knob | Location | Default | Effect |
 |---|---|---|---|
-| Threshold | `DEBOUNCE_HUMAN=8` in `stop-task-hook.sh` | 8s | Wait window for human-typed turn endings |
-| Threshold | `DEBOUNCE_TASKNOTIF=300` in `stop-task-hook.sh` | 300s | Wait window for Monitor-driven turn endings — longer so only the workflow's final Stop fires |
+| Threshold | `DEBOUNCE_HUMAN=8` in `discord-stop-task.sh` | 8s | Wait window for human-typed turn endings |
+| Threshold | `DEBOUNCE_TASKNOTIF=300` in `discord-stop-task.sh` | 300s | Wait window for Monitor-driven turn endings — longer so only the workflow's final Stop fires |
 | Threshold | `[ "$elapsed" -ge 30 ] \|\| exit 0` | 30s | Lower = more pings, also for short tasks |
 | Last-reply length | `clip(500)` | 500 chars | Discord field-value limit is 1024 |
 | Tool count cap | `.[:8]` | 8 | Top-N tools shown; rest hidden |
@@ -239,6 +302,7 @@ still show.
 | Color | `CLAUDE_ORANGE=14251863` (Stop) / `URGENT_RED=15158332` (Notification) | — | Decimal of `0xRRGGBB` |
 | Bot nickname | `--arg username "Waddle Dee"` | "Waddle Dee" | Per-message Discord override |
 | Notification matcher | `"matcher": "permission_prompt\|auth_success\|elicitation_dialog\|elicitation_response"` in `settings.json` | (no idle_prompt) | Add `\|idle_prompt` if you actually want the 2-min idle reminders |
+| Catalog refresh cadence | `1209600` in both `discord-stop-task.sh` (trigger) and `discord-refresh-pricing.sh` (`MAX_AGE`) | 14 days | How stale the price catalog may get before the Stop hook auto-refreshes it |
 
 ## Gotchas
 
@@ -295,6 +359,30 @@ sizes, so this only matters if you use Sonnet 4 (legacy).
 
 Claude Code "fast mode" costs 6× more on Opus. The transcript doesn't
 flag fast vs normal, so fast mode usage shows as standard pricing.
+
+### Windows (Git Bash) — native curl/jq argv + CRLF
+
+These hooks run fine on Windows via Git Bash, but the *native* `curl.exe` and
+`jq.exe` introduce four traps the scripts already work around. Keep them in mind
+if you edit the scripts:
+
+1. **curl mangles multibyte argv.** Passing the JSON payload as a `-d "$payload"`
+   argument corrupts UTF-8 (emoji, `·`) in the Windows argv↔codepage
+   translation, so Discord rejects it with `400 {"code":50109}`. Fix: pipe the
+   payload over stdin — `printf '%s' "$payload" | curl … --data-binary @-`.
+2. **jq.exe emits CRLF.** Every value captured from jq into a shell variable
+   gets a trailing `\r`. On `transcript_path` that makes `[ -f "$transcript" ]`
+   fail, silently skipping the entire metrics-parsing block (no model / tokens /
+   tools / cost — only Project shows). Fix: pipe jq output through `tr -d '\r'`.
+3. **`@tsv` doubles backslashes.** jq's `@tsv` escapes `\` → `\\`, so a Windows
+   path `C:\Users\…` becomes `C:\\Users\\…` and won't open. Fix: read each field
+   with a separate `jq -r` (which keeps single backslashes) instead of one
+   `@tsv` row.
+4. **Basename stripping needs `\`.** The 📝 Files field stripped directories with
+   `sub("^.*/"; "")`, which misses backslash paths and printed full Windows
+   paths. Fix: `sub("^.*[/\\\\]"; "")` to split on either separator.
+
+All four fixes are no-ops on macOS/Linux, so the scripts stay cross-platform.
 
 ## Why not just shell out to `ccusage`?
 

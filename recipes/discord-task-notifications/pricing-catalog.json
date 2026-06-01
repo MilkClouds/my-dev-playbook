@@ -1,0 +1,17 @@
+{
+  "_comment": "Self-managed Claude API pricing for the Discord Stop hook. USD per million tokens. cacheWrite = 5-minute TTL write (1.25x input); 1-hour writes are not modeled. Keys are short model IDs; the hook strips a trailing -YYYYMMDD from the transcript model id before lookup, so dated ids (e.g. claude-haiku-4-5-20251001) match these short keys. Source: https://platform.claude.com/docs/en/docs/about-claude/pricing (verified 2026-05-31).",
+  "modelPricing": {
+    "claude-opus-4-8":   {"input": 5,    "output": 25, "cacheRead": 0.5,  "cacheWrite": 6.25},
+    "claude-opus-4-7":   {"input": 5,    "output": 25, "cacheRead": 0.5,  "cacheWrite": 6.25},
+    "claude-opus-4-6":   {"input": 5,    "output": 25, "cacheRead": 0.5,  "cacheWrite": 6.25},
+    "claude-opus-4-5":   {"input": 5,    "output": 25, "cacheRead": 0.5,  "cacheWrite": 6.25},
+    "claude-opus-4-1":   {"input": 15,   "output": 75, "cacheRead": 1.5,  "cacheWrite": 18.75},
+    "claude-opus-4":     {"input": 15,   "output": 75, "cacheRead": 1.5,  "cacheWrite": 18.75},
+    "claude-sonnet-4-6": {"input": 3,    "output": 15, "cacheRead": 0.3,  "cacheWrite": 3.75},
+    "claude-sonnet-4-5": {"input": 3,    "output": 15, "cacheRead": 0.3,  "cacheWrite": 3.75},
+    "claude-sonnet-4":   {"input": 3,    "output": 15, "cacheRead": 0.3,  "cacheWrite": 3.75},
+    "claude-3-7-sonnet": {"input": 3,    "output": 15, "cacheRead": 0.3,  "cacheWrite": 3.75},
+    "claude-haiku-4-5":  {"input": 1,    "output": 5,  "cacheRead": 0.1,  "cacheWrite": 1.25},
+    "claude-3-5-haiku":  {"input": 0.8,  "output": 4,  "cacheRead": 0.08, "cacheWrite": 1.0}
+  }
+}
