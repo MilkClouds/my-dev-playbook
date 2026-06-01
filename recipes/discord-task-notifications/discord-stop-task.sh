@@ -158,6 +158,20 @@ if [ -n "$transcript" ] && [ -f "$transcript" ]; then
     IFS= read -r files_str
     IFS= read -r stop_reason
   } <<<"$parsed"
+
+  # Cache-miss refresh: tokens but no cost ⇒ this turn's model isn't in the
+  # catalog yet (e.g. a model released since the last refresh). Kick a background
+  # refresh, throttled to once a day — separate from the 14-day schedule above so
+  # cost recovers within a turn or two of a new model's launch, while a model
+  # LiteLLM hasn't published yet doesn't retrigger every turn. --force bypasses
+  # the refresher's own 14-day skip; the day guard here bounds the retries.
+  if [ -f "$REFRESH" ] && [ -n "$tokens_str" ] && [ -z "$cost_str" ] && [ -n "$model" ]; then
+    last_refresh=$(cat "$DATA/.last-refresh" 2>/dev/null | tr -dc 0-9)
+    if [ -z "$last_refresh" ] || [ $(( $(date +%s) - last_refresh )) -ge 86400 ]; then
+      nohup bash "$REFRESH" --force >/dev/null 2>&1 &
+      disown 2>/dev/null || true
+    fi
+  fi
 fi
 
 # Mobile push shows only the title (fields are desktop-only), so the title

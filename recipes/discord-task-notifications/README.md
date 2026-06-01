@@ -268,17 +268,30 @@ documented multipliers (read `0.1×` input, 5-minute write `1.25×` input). Writ
 are atomic and validated, so a failed or empty download leaves the current
 catalog untouched.
 
-- **Automatic**: the Stop hook checks the last-refresh timestamp
-  (`~/.claude/data/discord-task-notifications/.last-refresh`) and, if it's older than 14 days (or
-  missing), kicks off the refresh **detached in the background** (`nohup … &`).
-  The current turn's notification is never delayed — new prices land for the next
-  one. The script self-throttles (skips if a successful refresh ran < 14 days
-  ago) and lock-guards against concurrent runs, so the trigger is cheap to fire.
+The Stop hook fires the refresh **detached in the background** (`nohup … &`), so
+the current turn's notification is never delayed — new prices land for the next
+one. Two triggers, both reading the same `.last-refresh` timestamp under
+`~/.claude/data/discord-task-notifications/`:
+
+- **Scheduled (14 days)**: if the last successful refresh is older than 14 days
+  (or never ran), refresh. Keeps prices current under normal use.
+- **Cache-miss (≤1 day)**: if a turn has token usage but **no cost** — i.e. its
+  model isn't in the catalog yet, e.g. a model released since the last refresh —
+  refresh now (`--force`), throttled to once a day. So when a new model ships,
+  cost recovers within a turn or two of first use instead of waiting up to 14
+  days; a model LiteLLM hasn't published yet retries daily until it appears,
+  rather than hammering every turn.
+
+The refresher self-throttles and lock-guards against concurrent runs, so firing
+either trigger is cheap.
+
 - **Manual**: `bash ~/.claude/hooks/discord-refresh-pricing.sh` (add `--force` to
   bypass the 14-day throttle). Prints a one-line summary to stderr.
-- **Brand-new model not in LiteLLM yet**: cost silently falls back to hidden
-  (token counts still show). Add a short key by hand to
-  `~/.claude/data/discord-task-notifications/pricing-catalog.json`; the next refresh keeps it.
+- **New model not in LiteLLM yet**: cost stays hidden (token counts still show)
+  and the cache-miss trigger keeps retrying daily. To fix it immediately, add a
+  short key by hand to
+  `~/.claude/data/discord-task-notifications/pricing-catalog.json`; the next
+  refresh preserves it.
 
 ```jq
 ($catalog.modelPricing[$mfull] // {input:0, output:0, cacheRead:0, cacheWrite:0}) as $pr
