@@ -1,1 +1,4 @@
 .omc/
+
+# skill-creator eval workspaces (local benchmarks/records)
+.claude/skills/*-workspace/

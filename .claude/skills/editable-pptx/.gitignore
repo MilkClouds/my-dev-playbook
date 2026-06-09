@@ -1,0 +1,10 @@
+# toolchain + build artifacts (re-creatable: `bash scripts/setup.sh` + build commands)
+node_modules/
+package-lock.json
+.tools/
+
+# generated decks / QA output
+*.pptx
+*.pdf
+*.png
+__pycache__/

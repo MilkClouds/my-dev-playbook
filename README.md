@@ -32,6 +32,7 @@ Optional, scenario-specific setups. Apply only when you need them.
 Claude Code skills in [`.claude/skills/`](.claude/skills/).
 
 - **sync-repos**: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
+- **editable-pptx**: Build fully editable PowerPoint decks from code — native textboxes/shapes/tables/charts (pptxgenjs) + native PowerPoint equations (LaTeX→OMML via pandoc). Reusable helper library and LibreOffice-based QA scripts.
 
 ### Installing skills
 
