@@ -29,24 +29,24 @@ Optional, scenario-specific setups. Apply only when you need them.
 
 ## Skills
 
-Claude Code skills in [`.claude/skills/`](.claude/skills/).
+This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill ships as its own plugin in [`.claude/skills/`](.claude/skills/).
 
 - **sync-repos**: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
 - **editable-pptx**: Build fully editable PowerPoint decks from code — native textboxes/shapes/tables/charts (pptxgenjs) + native PowerPoint equations (LaTeX→OMML via pandoc). Reusable helper library and LibreOffice-based QA scripts.
 
 ### Installing skills
 
-**Remote install** (no clone needed):
+Install via the `claude plugin` CLI — register the marketplace once, then install any skill:
 
 ```bash
-git clone --depth 1 git@github.com:MilkClouds/my-dev-playbook.git /tmp/_playbook && mkdir -p ~/.claude/skills && cp -r /tmp/_playbook/.claude/skills/sync-repos ~/.claude/skills/ && rm -rf /tmp/_playbook
+claude plugin marketplace add MilkClouds/my-dev-playbook
+claude plugin install editable-pptx@my-dev-playbook                  # user scope (all projects)
+claude plugin install editable-pptx@my-dev-playbook --scope project  # this repo only (committed .claude/settings.json)
 ```
 
-**Local symlink** (if already cloned):
-
-```bash
-ln -s "$(pwd)/.claude/skills/sync-repos" ~/.claude/skills/sync-repos
-```
+Swap `editable-pptx` for any plugin listed above. To remove, use
+`claude plugin marketplace remove my-dev-playbook` — this also updates the
+`known_marketplaces.json` registry, which hand-deleting the cache dir does not.
 
 ## License
 
