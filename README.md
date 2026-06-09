@@ -36,17 +36,23 @@ This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.j
 
 ### Installing skills
 
-Install via the `claude plugin` CLI — register the marketplace once, then install any skill:
+Install via the `claude plugin` CLI. Both `marketplace add` and `install`
+default to **user** scope; keep the marketplace and the plugin on the **same**
+scope. Pick one:
 
 ```bash
+# Project scope — wire a skill into one repo (committed to its .claude/settings.json, travels with the repo)
+claude plugin marketplace add MilkClouds/my-dev-playbook --scope project
+claude plugin install editable-pptx@my-dev-playbook --scope project
+
+# User scope — available in every project on this machine
 claude plugin marketplace add MilkClouds/my-dev-playbook
-claude plugin install editable-pptx@my-dev-playbook                  # user scope (all projects)
-claude plugin install editable-pptx@my-dev-playbook --scope project  # this repo only (committed .claude/settings.json)
+claude plugin install editable-pptx@my-dev-playbook
 ```
 
 Swap `editable-pptx` for any plugin listed above. To remove, use
 `claude plugin marketplace remove my-dev-playbook` — this also updates the
-`known_marketplaces.json` registry, which hand-deleting the cache dir does not.
+global `known_marketplaces.json` registry, which hand-deleting the cache dir does not.
 
 ## License
 
