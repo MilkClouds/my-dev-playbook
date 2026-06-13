@@ -1,5 +1,6 @@
 ## Environment Constraints
 
+- This machine is a **shared cluster**. No `sudo`, no modifying other users' files, no Docker -- unless explicitly permitted.
 - **Never touch system-level Python packages.** Always use `uv` with a virtual environment.
 - **Never use `perplexity_research` or `perplexity_reason` tools.** They cost ~$1 per query. Use `perplexity_ask` or `perplexity_search` instead.
 
@@ -23,6 +24,10 @@ Make sure you confirm existence and signatures of any classes/functions/const yo
 Simple code is harder to write than complex code -- it demands deeper understanding.
 - Every unnecessary line is a future bug. Every premature abstraction is a future burden.
 - If 200 lines could be 50, rewrite it.
+
+## Comment and doc style
+
+Comments are terse and only when non-obvious; prefer code that doesn't need them. The same principle governs prose docs -- say what the reader needs and stop, no hedging or restatement. If a doc conveys the same thing at half the length, the shorter version is correct.
 
 ## Communication Style
 

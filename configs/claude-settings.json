@@ -1,6 +1,12 @@
 {
   "skillListingBudgetFraction": 1,
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "effortLevel": "xhigh",
   "env": {
-    "ENABLE_TOOL_SEARCH": "false"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "ENABLE_TOOL_SEARCH": "false",
+    "CLAUDE_CODE_SCROLL_SPEED": "10"
   }
 }

@@ -3,6 +3,7 @@
     "codex@openai-codex": true,
     "skill-creator@claude-plugins-official": true,
     "make-bib@make-bib": true,
+    "discord@claude-plugins-official": true,
     "claude-pace@claude-pace": true
   },
   "extraKnownMarketplaces": {
@@ -12,10 +13,6 @@
     },
     "openai-codex": {
       "source": { "source": "github", "repo": "openai/codex-plugin-cc" },
-      "autoUpdate": true
-    },
-    "anthropic-agent-skills": {
-      "source": { "source": "github", "repo": "anthropics/skills" },
       "autoUpdate": true
     },
     "claude-pace": {
