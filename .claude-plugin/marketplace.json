@@ -5,26 +5,20 @@
   },
   "metadata": {
     "description": "MilkClouds' personal dev playbook — reusable Claude Code skills.",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "plugins": [
     {
       "name": "editable-pptx",
       "description": "Build fully editable PowerPoint (.pptx) decks from code — native textboxes, shapes, tables, charts, and real PowerPoint equations (LaTeX→OMML). Use for making, building, or rebuilding slide decks, presentations, or .pptx from notes, a paper, markdown, or an HTML deck.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/editable-pptx"
-      ]
+      "source": "./skills/editable-pptx",
+      "strict": false
     },
     {
       "name": "sync-repos",
       "description": "Sync commits between two git remotes with unrelated histories via cherry-pick, preserving authorship. Use to sync a fork, bring upstream changes, or push to public.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/sync-repos"
-      ]
+      "source": "./skills/sync-repos",
+      "strict": false
     }
   ]
 }
