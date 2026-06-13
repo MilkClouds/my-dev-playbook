@@ -20,7 +20,7 @@ tmp=$(mktemp -d) && \
   git clone --depth=1 https://github.com/MilkClouds/my-dev-playbook "$tmp" && \
   dest="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/progress-utils" && \
   mkdir -p "$dest" && \
-  cp "$tmp/progress-utils/progress-utils.plugin.zsh" "$dest/" && \
+  cp "$tmp/tools/progress-utils/progress-utils.plugin.zsh" "$dest/" && \
   rm -rf "$tmp"
 ```
 

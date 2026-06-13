@@ -28,7 +28,7 @@ Install the cookie auth proxy:
 
 ```bash
 mkdir -p ~/.local/bin
-cp recipes/mobile-tmux/ttyd-cookie-auth-proxy.mjs ~/.local/bin/
+cp docs/recipes/mobile-tmux/ttyd-cookie-auth-proxy.mjs ~/.local/bin/
 chmod 700 ~/.local/bin/ttyd-cookie-auth-proxy.mjs
 ```
 

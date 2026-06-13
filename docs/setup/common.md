@@ -32,7 +32,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
   && tmp=$(mktemp -d) \
   && git clone --depth=1 https://github.com/MilkClouds/my-dev-playbook "$tmp" \
   && mkdir -p ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/progress-utils \
-  && cp "$tmp/progress-utils/progress-utils.plugin.zsh" ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/progress-utils/ \
+  && cp "$tmp/tools/progress-utils/progress-utils.plugin.zsh" ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/progress-utils/ \
   && rm -rf "$tmp" \
   && sed -i.bak 's/^plugins=(.*/plugins=(git zsh-syntax-highlighting zsh-autosuggestions progress-utils)/' ~/.zshrc \
   && sed -i.bak 's/^ZSH_THEME=".*/ZSH_THEME="random"/' ~/.zshrc \
@@ -78,7 +78,7 @@ uv self update && uv tool upgrade --all \
 
 ## Editor *(minimal)*
 
-Use [VS Code](https://github.com/microsoft/vscode). Apply settings and keybindings from: [settings.json](../configs/settings.json), [keybindings.json](../configs/keybindings.json).
+Use [VS Code](https://github.com/microsoft/vscode). Apply settings and keybindings from: [settings.json](../../configs/settings.json), [keybindings.json](../../configs/keybindings.json).
 
 ## Agentic Coding Tools
 
@@ -88,12 +88,12 @@ Layered stack: a base agentic CLI per provider, an orchestration layer on top, a
   - **[Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)** *(minimal)*: Anthropic's first-party agentic coding CLI.
   - **[claude-pace](https://github.com/Astro-Han/claude-pace)** *(minimal)*: Single-file bash statusline showing 5h/7d quota usage with pace delta, context bar, and git diff stats.
   - **Configs** *(minimal)* — apply after Claude Code is installed; all four configure Claude Code itself:
-    - [`claude-plugins.json`](../configs/claude-plugins.json) — Plugin marketplace enablement. Turns on [`claude-pace`](https://github.com/Astro-Han/claude-pace), [`skill-creator`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), [`make-bib`](https://github.com/MilkClouds/make-bib), and the [`codex` plugin](https://github.com/openai/codex-plugin-cc) (lets you call Codex from within Claude Code as a subagent for second opinions — only takes effect when the [Codex stack](#codex-stack) below is also installed).
-    - [`mcp-servers.json`](../configs/mcp-servers.json) — MCP servers wired into Claude Code: [`context7`](https://github.com/upstash/context7), [`perplexity`](https://github.com/perplexityai/modelcontextprotocol), [`github`](https://github.com/github/github-mcp-server), [`arxiv-mcp-server`](https://github.com/blazickjp/arxiv-mcp-server), [`semantic-scholar-mcp`](https://github.com/MilkClouds/semantic-scholar-mcp), [`pdf-reader`](https://github.com/SylphxAI/pdf-reader-mcp), [`sequential-thinking`](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking), [`notion-mcp-server`](https://github.com/makenotion/notion-mcp-server).
-    - [`claude-settings.json`](../configs/claude-settings.json) — Non-plugin/MCP overrides for `~/.claude/settings.json`: `skillListingBudgetFraction: 1` (list every skill regardless of budget pressure) and `env.ENABLE_TOOL_SEARCH: "false"` (preload all tool schemas instead of fetching deferred ones via ToolSearch). Merge these keys into the existing `~/.claude/settings.json` rather than overwriting the file.
-    - [`CLAUDE.md`](../configs/CLAUDE.md) — User-level Claude Code memory file. Global instructions, language preference, environment constraints.
+    - [`claude-plugins.json`](../../configs/claude-plugins.json) — Plugin marketplace enablement. Turns on [`claude-pace`](https://github.com/Astro-Han/claude-pace), [`skill-creator`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), [`make-bib`](https://github.com/MilkClouds/make-bib), and the [`codex` plugin](https://github.com/openai/codex-plugin-cc) (lets you call Codex from within Claude Code as a subagent for second opinions — only takes effect when the [Codex stack](#codex-stack) below is also installed).
+    - [`mcp-servers.json`](../../configs/mcp-servers.json) — MCP servers wired into Claude Code: [`context7`](https://github.com/upstash/context7), [`perplexity`](https://github.com/perplexityai/modelcontextprotocol), [`github`](https://github.com/github/github-mcp-server), [`arxiv-mcp-server`](https://github.com/blazickjp/arxiv-mcp-server), [`semantic-scholar-mcp`](https://github.com/MilkClouds/semantic-scholar-mcp), [`pdf-reader`](https://github.com/SylphxAI/pdf-reader-mcp), [`sequential-thinking`](https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking), [`notion-mcp-server`](https://github.com/makenotion/notion-mcp-server).
+    - [`claude-settings.json`](../../configs/claude-settings.json) — Non-plugin/MCP overrides for `~/.claude/settings.json`: `skillListingBudgetFraction: 1` (list every skill regardless of budget pressure) and `env.ENABLE_TOOL_SEARCH: "false"` (preload all tool schemas instead of fetching deferred ones via ToolSearch). Merge these keys into the existing `~/.claude/settings.json` rather than overwriting the file.
+    - [`CLAUDE.md`](../../configs/CLAUDE.md) — User-level Claude Code memory file. Global instructions, language preference, environment constraints.
   - **Commands** *(as-needed)* — slash commands. Install by copying into `~/.claude/commands/`:
-    - [`/sf`](../.claude/commands/sf.md) — Pre-2.1.147 `/simplify` (3 parallel review agents + direct fix). Built-in `/simplify` now only reports. Background: [`recipes/claude-code/simplify-history/`](../recipes/claude-code/simplify-history/).
+    - [`/sf`](../../.claude/commands/sf.md) — Pre-2.1.147 `/simplify` (3 parallel review agents + direct fix). Built-in `/simplify` now only reports. Background: [`docs/recipes/claude-code/simplify-history/`](../../docs/recipes/claude-code/simplify-history/).
 - <a id="codex-stack"></a>**Codex stack** (secondary):
   - **[Codex](https://github.com/openai/codex)** *(as-needed)*: OpenAI's first-party agentic coding CLI; secondary tool for second-opinion runs.
   - **[oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) (`omx`)** *(as-needed)*: Multi-agent orchestration layer on top of Codex. Requires Codex.

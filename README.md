@@ -2,31 +2,39 @@
 
 Personal development environment setup. Linux and macOS focused.
 
-## What's Included
+## Layout
 
-- **[bootstrap/](bootstrap/)**: Environment setup guides (shell, editors, cluster tools).
-- **[recipes/](recipes/)**: Optional setups for specific scenarios.
-- **[configs/](configs/)**: VS Code settings, keybindings, Claude Code plugins, MCP servers, CLAUDE.md directives.
-- **[references/](references/)**: Reference notes — e.g. [python-libraries.md](references/python-libraries.md), a curated list of Go-to Python libraries.
-- **[progress-utils/](progress-utils/)**: Oh-my-zsh plugin for progress bars on cp/mv/rm/tar/wget.
-- **[.claude/skills/](.claude/skills/)**: Claude Code skills.
+- **[docs/](docs/)** — guides and reference notes you read.
+  - **[setup/](docs/setup/)** — first-run environment setup (shell, editors, cluster tools).
+  - **[recipes/](docs/recipes/)** — optional, scenario-specific setups.
+  - **[references/](docs/references/)** — curated lists and migration notes.
+- **[configs/](configs/)** — VS Code settings, keybindings, Claude Code plugins, MCP servers, CLAUDE.md directives.
+- **[tools/](tools/)** — runnable code.
+  - **[whalebin/](tools/whalebin/)** — wrap binaries that live in a Docker image as host CLIs via Charliecloud.
+  - **[progress-utils/](tools/progress-utils/)** — oh-my-zsh plugin for progress bars on cp/mv/rm/tar/wget.
+- **[.claude/skills/](.claude/skills/)** — Claude Code skills (this repo is a plugin marketplace).
 
-## Bootstrap
+## Setup
 
 Start with common, then add environment-specific setup.
 
-1. **[bootstrap/common.md](bootstrap/common.md)**: Shell, package managers, editor, AI coding agents. Every machine.
-2. **[bootstrap/hpc.md](bootstrap/hpc.md)**: Slurm aliases, smon, Docker GPU aliases, VS Code Remote-SSH. Cluster nodes.
-3. **[bootstrap/env-vars.md](bootstrap/env-vars.md)**: User-level env vars via `environment.d`; MANPATH and SLURM exceptions.
+1. **[docs/setup/common.md](docs/setup/common.md)**: Shell, package managers, editor, AI coding agents. Every machine.
+2. **[docs/setup/hpc.md](docs/setup/hpc.md)**: Slurm aliases, smon, Docker GPU aliases, VS Code Remote-SSH. Cluster nodes.
+3. **[docs/setup/env-vars.md](docs/setup/env-vars.md)**: User-level env vars via `environment.d`; MANPATH and SLURM exceptions.
 
 ## Recipes
 
 Optional, scenario-specific setups. Apply only when you need them.
 
-- **[recipes/mobile-tmux/](recipes/mobile-tmux/)**: Authenticated mobile browser access to tmux via `ttyd` + cookie auth proxy.
-- **[recipes/windows.md](recipes/windows.md)**: Windows 11 package install method decisions (installer / pixi / choco). *Experimental.*
-- **[recipes/discord-task-notifications/](recipes/discord-task-notifications/)**: Stop / Notification / UserPromptSubmit hooks that post Discord embeds when Claude Code finishes a long task. Debounced to silence when you're at the terminal; per-turn token + USD cost via ccusage pricing catalog.
-- **[recipes/pretty-git-diffs/](recipes/pretty-git-diffs/)**: Syntax-highlighted git diffs via delta + lazygit — across the CLI, the lazygit TUI, and inside Claude Code's `!` bash (with the non-TTY color workaround).
+- **[docs/recipes/mobile-tmux/](docs/recipes/mobile-tmux/)**: Authenticated mobile browser access to tmux via `ttyd` + cookie auth proxy.
+- **[docs/recipes/windows.md](docs/recipes/windows.md)**: Windows 11 package install method decisions (installer / pixi / choco). *Experimental.*
+- **[docs/recipes/discord-task-notifications/](docs/recipes/discord-task-notifications/)**: Stop / Notification / UserPromptSubmit hooks that post Discord embeds when Claude Code finishes a long task. Debounced to silence when you're at the terminal; per-turn token + USD cost via ccusage pricing catalog.
+- **[docs/recipes/pretty-git-diffs/](docs/recipes/pretty-git-diffs/)**: Syntax-highlighted git diffs via delta + lazygit — across the CLI, the lazygit TUI, and inside Claude Code's `!` bash (with the non-TTY color workaround).
+- **[docs/recipes/claude-code/](docs/recipes/claude-code/)**: Claude Code workflow notes — MCP update flow and the `/simplify` history reconstruction.
+
+## References
+
+- **[docs/references/python-libraries.md](docs/references/python-libraries.md)**: Curated go-to Python libraries, grouped by category.
 
 ## Skills
 
