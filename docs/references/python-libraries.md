@@ -31,7 +31,7 @@ Pins and extras are written exactly as installed.
 
 **Media**
 
-- **`mediaref[video]`** — Lightweight media reference abstraction: pass around lazily-resolved references to images/video instead of decoded tensors. The `[video]` extra enables video decoding.
+- **[open-world-agents/mediaref](https://github.com/open-world-agents/mediaref)** — Lightweight media reference abstraction: pass around lazily-resolved references to images/video instead of decoded tensors. Install as `mediaref[video]` (the `[video]` extra enables video decoding).
 
 **Lazy Loading & Imports**
 
