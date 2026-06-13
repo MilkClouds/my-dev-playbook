@@ -4,8 +4,8 @@
     "name": "MilkClouds"
   },
   "metadata": {
-    "description": "MilkClouds' personal dev playbook — reusable Claude Code skills and commands.",
-    "version": "0.2.0"
+    "description": "MilkClouds' personal dev playbook — reusable Claude Code skills.",
+    "version": "0.3.0"
   },
   "plugins": [
     {
@@ -24,15 +24,6 @@
       "strict": false,
       "skills": [
         "./skills/sync-repos"
-      ]
-    },
-    {
-      "name": "sf",
-      "description": "Pre-2.1.147 /simplify — 3 parallel review agents that find reuse/simplification/efficiency cleanups, then apply the fixes directly. The built-in /simplify now only reports.",
-      "source": "./",
-      "strict": false,
-      "commands": [
-        "./commands/sf.md"
       ]
     }
   ]

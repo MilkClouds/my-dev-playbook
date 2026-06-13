@@ -12,7 +12,8 @@ Personal development environment setup. Linux and macOS focused.
 - **[tools/](tools/)** — runnable code.
   - **[whalebin/](tools/whalebin/)** — wrap binaries that live in a Docker image as host CLIs via Charliecloud.
   - **[progress-utils/](tools/progress-utils/)** — oh-my-zsh plugin for progress bars on cp/mv/rm/tar/wget.
-- **[skills/](skills/)** — Claude Code skills (this repo is a plugin marketplace).
+- **[skills/](skills/)** — Claude Code skills, distributed as marketplace plugins.
+- **[commands/](commands/)** — Claude Code slash commands (e.g. `/sf`), installed by copying into `~/.claude/commands/`.
 
 ## Setup
 
@@ -36,15 +37,14 @@ Optional, scenario-specific setups. Apply only when you need them.
 
 - **[docs/references/python-libraries.md](docs/references/python-libraries.md)**: Curated go-to Python libraries, grouped by category.
 
-## Skills & Commands
+## Skills
 
-This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill ([`skills/`](skills/)) and command ([`commands/`](commands/)) ships as its own plugin.
+This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill in [`skills/`](skills/) ships as its own plugin.
 
-- **sync-repos** *(skill)*: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
-- **editable-pptx** *(skill)*: Build fully editable PowerPoint decks from code — native textboxes/shapes/tables/charts (pptxgenjs) + native PowerPoint equations (LaTeX→OMML via pandoc). Reusable helper library and LibreOffice-based QA scripts.
-- **sf** *(command `/sf`)*: Pre-2.1.147 `/simplify` — 3 parallel review agents that find reuse/simplification/efficiency cleanups, then apply the fixes directly.
+- **sync-repos**: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
+- **editable-pptx**: Build fully editable PowerPoint decks from code — native textboxes/shapes/tables/charts (pptxgenjs) + native PowerPoint equations (LaTeX→OMML via pandoc). Reusable helper library and LibreOffice-based QA scripts.
 
-### Installing
+### Installing skills
 
 Install via the `claude plugin` CLI. Both `marketplace add` and `install`
 default to **user** scope; keep the marketplace and the plugin on the **same**
@@ -60,9 +60,22 @@ claude plugin marketplace add MilkClouds/my-dev-playbook
 claude plugin install editable-pptx@my-dev-playbook
 ```
 
-Swap `editable-pptx` for any plugin listed above. To remove, use
+Swap `editable-pptx` for any skill above. To remove, use
 `claude plugin marketplace remove my-dev-playbook` — this also updates the
 global `known_marketplaces.json` registry, which hand-deleting the cache dir does not.
+
+## Commands
+
+- **[`/sf`](commands/sf.md)**: Pre-2.1.147 `/simplify` — 3 parallel review agents that find reuse/simplification/efficiency cleanups, then apply the fixes directly.
+
+Marketplace-distributed commands are namespaced (`/<plugin>:<command>`), so to keep the bare `/sf` invocation, install it as a **user command** by copying — not via the marketplace:
+
+```bash
+mkdir -p ~/.claude/commands
+cp commands/sf.md ~/.claude/commands/          # from a local clone
+# …or fetch directly:
+curl -fsSL https://raw.githubusercontent.com/MilkClouds/my-dev-playbook/main/commands/sf.md -o ~/.claude/commands/sf.md
+```
 
 ## License
 
