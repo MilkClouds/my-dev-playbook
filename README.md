@@ -7,6 +7,7 @@ Personal development environment setup. Linux and macOS focused.
 - **[bootstrap/](bootstrap/)**: Environment setup guides (shell, editors, cluster tools).
 - **[recipes/](recipes/)**: Optional setups for specific scenarios.
 - **[configs/](configs/)**: VS Code settings, keybindings, Claude Code plugins, MCP servers, CLAUDE.md directives.
+- **[references/](references/)**: Reference notes — e.g. [python-libraries.md](references/python-libraries.md), a curated list of Go-to Python libraries.
 - **[progress-utils/](progress-utils/)**: Oh-my-zsh plugin for progress bars on cp/mv/rm/tar/wget.
 - **[.claude/skills/](.claude/skills/)**: Claude Code skills.
 
