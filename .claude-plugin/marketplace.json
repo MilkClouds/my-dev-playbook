@@ -14,7 +14,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./.claude/skills/editable-pptx"
+        "./skills/editable-pptx"
       ]
     },
     {
@@ -23,7 +23,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./.claude/skills/sync-repos"
+        "./skills/sync-repos"
       ]
     }
   ]

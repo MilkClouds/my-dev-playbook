@@ -12,7 +12,7 @@ Personal development environment setup. Linux and macOS focused.
 - **[tools/](tools/)** — runnable code.
   - **[whalebin/](tools/whalebin/)** — wrap binaries that live in a Docker image as host CLIs via Charliecloud.
   - **[progress-utils/](tools/progress-utils/)** — oh-my-zsh plugin for progress bars on cp/mv/rm/tar/wget.
-- **[.claude/skills/](.claude/skills/)** — Claude Code skills (this repo is a plugin marketplace).
+- **[skills/](skills/)** — Claude Code skills (this repo is a plugin marketplace).
 
 ## Setup
 
@@ -38,7 +38,7 @@ Optional, scenario-specific setups. Apply only when you need them.
 
 ## Skills
 
-This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill ships as its own plugin in [`.claude/skills/`](.claude/skills/).
+This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill ships as its own plugin in [`skills/`](skills/).
 
 - **sync-repos**: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
 - **editable-pptx**: Build fully editable PowerPoint decks from code — native textboxes/shapes/tables/charts (pptxgenjs) + native PowerPoint equations (LaTeX→OMML via pandoc). Reusable helper library and LibreOffice-based QA scripts.
