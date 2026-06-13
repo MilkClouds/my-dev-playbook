@@ -50,4 +50,5 @@ Pins and extras are written exactly as installed.
 - **[astral-sh/ruff](https://github.com/astral-sh/ruff)** — Linter + formatter in one, Rust-fast. Replaces flake8/isort/black.
 - **[astral-sh/ty](https://github.com/astral-sh/ty)** — Astral's fast type checker (Rust).
 - **[facebook/pyrefly](https://github.com/facebook/pyrefly)** — Meta's fast type checker (Rust). Tracked alongside `ty` as the next-gen alternatives to mypy/pyright.
+- **[astral-sh/uv](https://github.com/astral-sh/uv)** — Extremely fast package & project manager (resolver, installer, venv, runner) in Rust. The default for envs and installs: `uv venv`, `uv pip`, `uv run`, `uv tool`.
 - **[pypa/hatch](https://github.com/pypa/hatch)** — Project & build management. **Default to hatch for new projects — avoid setuptools.**
