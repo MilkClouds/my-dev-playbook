@@ -13,7 +13,7 @@ Pins and extras are written exactly as installed.
 
 **Async**
 
-- **[agronholm/anyio](https://github.com/agronholm/anyio)** — Async abstraction layer over asyncio/trio. Structured concurrency (task groups), portable primitives. The async foundation many modern libs build on.
+- **[agronholm/anyio](https://github.com/agronholm/anyio)** — Async abstraction layer over asyncio/trio with structured concurrency (task groups, cancel scopes) and portable primitives. **Strongly prefer this over raw asyncio** — SC makes cancellation and error propagation sane. The async foundation many modern libs build on.
 
 **ML / Hugging Face Stack**
 
