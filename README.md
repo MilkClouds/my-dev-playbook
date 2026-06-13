@@ -36,14 +36,15 @@ Optional, scenario-specific setups. Apply only when you need them.
 
 - **[docs/references/python-libraries.md](docs/references/python-libraries.md)**: Curated go-to Python libraries, grouped by category.
 
-## Skills
+## Skills & Commands
 
-This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill ships as its own plugin in [`skills/`](skills/).
+This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill ([`skills/`](skills/)) and command ([`commands/`](commands/)) ships as its own plugin.
 
-- **sync-repos**: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
-- **editable-pptx**: Build fully editable PowerPoint decks from code — native textboxes/shapes/tables/charts (pptxgenjs) + native PowerPoint equations (LaTeX→OMML via pandoc). Reusable helper library and LibreOffice-based QA scripts.
+- **sync-repos** *(skill)*: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
+- **editable-pptx** *(skill)*: Build fully editable PowerPoint decks from code — native textboxes/shapes/tables/charts (pptxgenjs) + native PowerPoint equations (LaTeX→OMML via pandoc). Reusable helper library and LibreOffice-based QA scripts.
+- **sf** *(command `/sf`)*: Pre-2.1.147 `/simplify` — 3 parallel review agents that find reuse/simplification/efficiency cleanups, then apply the fixes directly.
 
-### Installing skills
+### Installing
 
 Install via the `claude plugin` CLI. Both `marketplace add` and `install`
 default to **user** scope; keep the marketplace and the plugin on the **same**
