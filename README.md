@@ -8,7 +8,7 @@ Personal development environment setup. Linux and macOS focused.
   - **[setup/](docs/setup/)** — first-run environment setup (shell, editors, cluster tools).
   - **[recipes/](docs/recipes/)** — optional, scenario-specific setups.
   - **[references/](docs/references/)** — curated lists and migration notes.
-- **[configs/](configs/)** — VS Code settings, keybindings, Claude Code plugins, MCP servers, CLAUDE.md directives.
+- **[configs/](configs/)** — VS Code settings, keybindings, Claude Code/Codex agent configs, MCP servers, user-level agent directives.
 - **[tools/](tools/)** — runnable code.
   - **[whalebin/](tools/whalebin/)** — wrap binaries that live in a Docker image as host CLIs via Charliecloud.
   - **[progress-utils/](tools/progress-utils/)** — oh-my-zsh plugin for progress bars on cp/mv/rm/tar/wget.

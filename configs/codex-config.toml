@@ -1,0 +1,17 @@
+personality = "pragmatic"
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+
+model = "gpt-5.5"
+model_reasoning_effort = "xhigh"
+
+[features]
+goals = true
+
+# Add machine-local trusted workspaces as needed:
+# [projects."/path/to/workspace"]
+# trust_level = "trusted"
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "project-name", "git-branch", "pull-request-number", "branch-changes", "context-used", "five-hour-limit", "weekly-limit"]
+status_line_use_colors = true

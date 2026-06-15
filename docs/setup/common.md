@@ -97,5 +97,8 @@ Layered stack: a base agentic CLI per provider, an orchestration layer on top, a
 - <a id="codex-stack"></a>**Codex stack** (secondary):
   - **[Codex](https://github.com/openai/codex)** *(as-needed)*: OpenAI's first-party agentic coding CLI; secondary tool for second-opinion runs.
   - **[oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) (`omx`)** *(as-needed)*: Multi-agent orchestration layer on top of Codex. Requires Codex.
+  - **Configs** *(as-needed)* — apply after Codex is installed:
+    - [`codex-config.toml`](../../configs/codex-config.toml) — User-level Codex config for `~/.codex/config.toml`: pragmatic personality, default model, on-request approvals, auto-review escalation checks, high reasoning effort, goals, and a dense TUI status line. Merge machine-local project trust entries instead of committing them.
+    - [`AGENTS.md`](../../configs/AGENTS.md) — User-level Codex instructions for `~/.codex/AGENTS.md`: cluster constraints, Korean response preference, code-change discipline, testing expectations, and concise communication style.
 - **Cross-cutting**:
   - **[agf](https://github.com/subinium/agf)** *(full)*: AI Agent Session Finder — locates and manages running agent sessions across both CLIs.
