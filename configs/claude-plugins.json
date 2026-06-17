@@ -2,13 +2,13 @@
   "enabledPlugins": {
     "codex@openai-codex": true,
     "skill-creator@claude-plugins-official": true,
-    "make-bib@make-bib": true,
+    "fetch-bib@fetch-bib": true,
     "discord@claude-plugins-official": true,
     "claude-pace@claude-pace": true
   },
   "extraKnownMarketplaces": {
-    "make-bib": {
-      "source": { "source": "github", "repo": "MilkClouds/make-bib" },
+    "fetch-bib": {
+      "source": { "source": "github", "repo": "MilkClouds/fetch-bib" },
       "autoUpdate": true
     },
     "openai-codex": {
