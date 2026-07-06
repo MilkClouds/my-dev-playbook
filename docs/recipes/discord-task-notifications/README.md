@@ -9,9 +9,9 @@ where you want to step away and get pinged.
 
 | Trigger | Color | When | Debounced |
 |---|---|---|---|
-| Stop hook (task complete) | 🟠 Claude orange | Turn ≥ 30s ends AND no new prompt during debounce window (8s for human turns, 300s for Monitor-driven turns — see [Monitor-aware turn handling](#monitor-aware-turn-handling)) | yes |
+| Stop hook (task complete) | 🟠 Claude orange | Turn ≥ 30s ends AND no new prompt during debounce window (8s for human turns, 300s for Monitor-driven turns; see [Monitor-aware turn handling](#monitor-aware-turn-handling)) | yes |
 | Notification hook (input needed) | 🔴 Red | Claude waiting on you (permission prompt, idle prompt, etc.) | no |
-| UserPromptSubmit hook | — | Internal; records prompt timestamps for the Stop hook | — |
+| UserPromptSubmit hook | - | Internal; records prompt timestamps for the Stop hook | - |
 
 Embed fields (Stop hook):
 
@@ -38,7 +38,7 @@ Claude Code · Stop hook        · 10:54
 ```
 
 Mobile push notifications render only the embed **title** (fields are
-desktop-only), so the title leads with the project name + duration — the
+desktop-only), so the title leads with the project name + duration. The
 glanceable summary lands on your phone, the full metrics/reply stay in the
 fields for the desktop client.
 
@@ -64,7 +64,7 @@ use `~/.claude` for brevity.
 | `~/.claude/hooks/discord-notification.sh` | Notification hook. Immediate red embed. |
 | `~/.claude/hooks/discord-refresh-pricing.sh` | Helper (not a hook). Refreshes the catalog from LiteLLM. Run by hand or auto-triggered by the Stop hook every 14 days. |
 | `~/.claude/data/discord-task-notifications/webhook-url` | Webhook URL, perm 600. Kept out of `settings.json` for tighter perms on shared hosts. |
-| `~/.claude/data/discord-task-notifications/mention-id` *(optional)* | Your Discord user ID. When present, the Notification hook prepends `<@ID>` to content — forces mobile push even on muted channels. |
+| `~/.claude/data/discord-task-notifications/mention-id` *(optional)* | Your Discord user ID. When present, the Notification hook prepends `<@ID>` to content; forces mobile push even on muted channels. |
 | `~/.claude/data/discord-task-notifications/pricing-catalog.json` | Self-managed per-model price table for the 💰 cost field. Independent of any plugin; ships with this recipe; auto-refreshed. |
 | `~/.claude/data/discord-task-notifications/.last-refresh`, `.refresh.lock` | Catalog refresh state + lock (managed automatically). |
 | `~/.claude/settings.json` | Registers the three hooks. |
@@ -145,11 +145,11 @@ Merge into the existing `hooks` block (don't replace; preserves any plugin hooks
 ```
 
 If the current Claude Code session doesn't pick up the new hooks immediately,
-open `/hooks` once — the settings watcher reloads on that menu open.
+open `/hooks` once; the settings watcher reloads on that menu open.
 
 **Windows (Git Bash):** Windows can't exec a `.sh` directly and `~` isn't
 reliably expanded by the hook runner, so wrap each command in `bash` with an
-absolute, forward-slash path — same as the `statusLine` command form:
+absolute, forward-slash path, same as the `statusLine` command form:
 
 ```json
 "command": "bash C:/Users/<you>/.claude/hooks/discord-stop-task.sh"
@@ -157,7 +157,7 @@ absolute, forward-slash path — same as the `statusLine` command form:
 
 Apply the same `bash C:/Users/<you>/.claude/hooks/…` form to all three hooks.
 The scripts themselves are identical across platforms; only this registration
-line differs. (`jq`, `curl`, and `bash` must be on `PATH` — Git for Windows ships
+line differs. (`jq`, `curl`, and `bash` must be on `PATH`; Git for Windows ships
 `bash`/`curl`; install `jq` separately, e.g. `pixi global install jq`.)
 
 ### 5. (Optional) Mobile push for "input needed"
@@ -171,7 +171,7 @@ chmod 600 "$DATA/mention-id"
 
 When this file exists, the Notification hook prepends `<@ID>` to the message
 content. Discord mentions force mobile push notifications even on muted
-channels — useful for "Claude is waiting on me" alerts.
+channels; useful for "Claude is waiting on me" alerts.
 
 ## How it works
 
@@ -188,11 +188,11 @@ Two layers solve this:
 
 Two files in `/tmp/`, both keyed on session_id:
 
-- `claude-task-start-${sid}` — anchors elapsed. Set by `UserPromptSubmit`
+- `claude-task-start-${sid}`: anchors elapsed. Set by `UserPromptSubmit`
   **only for human-typed prompts**; left alone for synthetic injections (see
-  next section). Persistent across Stops — overwritten on the next human
+  next section). Persistent across Stops; overwritten on the next human
   prompt, so it always points at "when the current human turn began."
-- `claude-last-prompt-${sid}` — set by `UserPromptSubmit` on **every** prompt
+- `claude-last-prompt-${sid}`: set by `UserPromptSubmit` on **every** prompt
   (human or synthetic). Read by Stop's debounce check.
 
 ### Monitor-aware turn handling
@@ -206,11 +206,11 @@ to just the last event (cost wrong). `discord-start-task.sh` skips them for
 workflow's final Stop fires, with metrics cumulative since the last human
 prompt.
 
-### Notification vs Stop — the community consensus
+### Notification vs Stop: the community consensus
 
 The strongest open-source examples treat **`Notification`** (not `Stop`) as
 the right trigger for "ping me when something needs me." `Notification` fires
-on a few subtypes — `permission_prompt`, `auth_success`,
+on a few subtypes: `permission_prompt`, `auth_success`,
 `elicitation_dialog`, `elicitation_response`, and `idle_prompt`. The last one
 fires every ~2 minutes whenever the user is idle and is almost always noise;
 both the recommended matcher (`permission_prompt|auth_success|elicitation_*`)
@@ -242,12 +242,12 @@ memory + CPU. Per-turn iteration uses one `[$turn[] | select(.type ==
 
 The Stop hook reads a per-model pricing catalog on disk. Resolution order:
 
-1. `~/.claude/data/discord-task-notifications/pricing-catalog.json` — the
+1. `~/.claude/data/discord-task-notifications/pricing-catalog.json`: the
    **self-managed** file shipped with this recipe (`pricing-catalog.json`). This
    is the source of truth; it needs no plugin and is auto-refreshed (below).
 2. Fallback: first hit of `~/.claude/plugins/marketplaces/*/shared/pricing-catalog.json`
    (e.g. a plugin that vendors [ccusage](https://github.com/ryoppippi/ccusage)'s
-   catalog) — only used if the file above is absent.
+   catalog), only used if the file above is absent.
 
 The schema is ccusage's `modelPricing` map (in turn sourced from
 [LiteLLM](https://github.com/BerriAI/litellm)): keys are model ids, values are
@@ -261,7 +261,7 @@ shipped catalog. The shipped seed was verified against
 
 `discord-refresh-pricing.sh` pulls Anthropic's `claude-*` prices from
 [LiteLLM's price feed](https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json)
-— the same data ccusage uses — and **merges them over** the existing catalog:
+(the same data ccusage uses) and **merges them over** the existing catalog:
 upstream entries win, and any model you added by hand that LiteLLM doesn't list
 yet is preserved. Cache prices missing upstream fall back to Anthropic's
 documented multipliers (read `0.1×` input, 5-minute write `1.25×` input). Writes
@@ -269,14 +269,14 @@ are atomic and validated, so a failed or empty download leaves the current
 catalog untouched.
 
 The Stop hook fires the refresh **detached in the background** (`nohup … &`), so
-the current turn's notification is never delayed — new prices land for the next
+the current turn's notification is never delayed; new prices land for the next
 one. Two triggers, both reading the same `.last-refresh` timestamp under
 `~/.claude/data/discord-task-notifications/`:
 
 - **Scheduled (14 days)**: if the last successful refresh is older than 14 days
   (or never ran), refresh. Keeps prices current under normal use.
-- **Cache-miss (≤1 day)**: if a turn has token usage but **no cost** — i.e. its
-  model isn't in the catalog yet, e.g. a model released since the last refresh —
+- **Cache-miss (≤1 day)**: if a turn has token usage but **no cost** (i.e. its
+  model isn't in the catalog yet, e.g. a model released since the last refresh),
   refresh now (`--force`), throttled to once a day. So when a new model ships,
   cost recovers within a turn or two of first use instead of waiting up to 14
   days; a model LiteLLM hasn't published yet retries daily until it appears,
@@ -299,7 +299,7 @@ either trigger is cheap.
 ```
 
 Falls back to **zero** (cost field hidden) if no catalog is found or the
-model isn't in it. Better than displaying a wrong number — token counts
+model isn't in it. Better than displaying a wrong number; token counts
 still show.
 
 ## Tunables
@@ -307,12 +307,12 @@ still show.
 | Knob | Location | Default | Effect |
 |---|---|---|---|
 | Threshold | `DEBOUNCE_HUMAN=8` in `discord-stop-task.sh` | 8s | Wait window for human-typed turn endings |
-| Threshold | `DEBOUNCE_TASKNOTIF=300` in `discord-stop-task.sh` | 300s | Wait window for Monitor-driven turn endings — longer so only the workflow's final Stop fires |
+| Threshold | `DEBOUNCE_TASKNOTIF=300` in `discord-stop-task.sh` | 300s | Wait window for Monitor-driven turn endings; longer so only the workflow's final Stop fires |
 | Threshold | `[ "$elapsed" -ge 30 ] \|\| exit 0` | 30s | Lower = more pings, also for short tasks |
 | Last-reply length | `clip(500)` | 500 chars | Discord field-value limit is 1024 |
 | Tool count cap | `.[:8]` | 8 | Top-N tools shown; rest hidden |
 | Token tail window | `tail -n 5000` | 5000 lines | Higher = more transcript history scanned; Monitor-heavy workflows can push the last human prompt past a small window |
-| Color | `CLAUDE_ORANGE=14251863` (Stop) / `URGENT_RED=15158332` (Notification) | — | Decimal of `0xRRGGBB` |
+| Color | `CLAUDE_ORANGE=14251863` (Stop) / `URGENT_RED=15158332` (Notification) | - | Decimal of `0xRRGGBB` |
 | Bot nickname | `--arg username "Waddle Dee"` | "Waddle Dee" | Per-message Discord override |
 | Notification matcher | `"matcher": "permission_prompt\|auth_success\|elicitation_dialog\|elicitation_response"` in `settings.json` | (no idle_prompt) | Add `\|idle_prompt` if you actually want the 2-min idle reminders |
 | Catalog refresh cadence | `1209600` in both `discord-stop-task.sh` (trigger) and `discord-refresh-pricing.sh` (`MAX_AGE`) | 14 days | How stale the price catalog may get before the Stop hook auto-refreshes it |
@@ -328,7 +328,7 @@ still show.
   D ]
 ```
 
-This inflates from 4 to 6 elements at runtime — the comma/pipe interaction
+This inflates from 4 to 6 elements at runtime; the comma/pipe interaction
 collapses adjacent `| op, … | op` chains. Workaround: wrap each element in
 extra `(...)`:
 
@@ -373,7 +373,7 @@ sizes, so this only matters if you use Sonnet 4 (legacy).
 Claude Code "fast mode" costs 6× more on Opus. The transcript doesn't
 flag fast vs normal, so fast mode usage shows as standard pricing.
 
-### Windows (Git Bash) — native curl/jq argv + CRLF
+### Windows (Git Bash): native curl/jq argv + CRLF
 
 These hooks run fine on Windows via Git Bash, but the *native* `curl.exe` and
 `jq.exe` introduce four traps the scripts already work around. Keep them in mind
@@ -382,11 +382,11 @@ if you edit the scripts:
 1. **curl mangles multibyte argv.** Passing the JSON payload as a `-d "$payload"`
    argument corrupts UTF-8 (emoji, `·`) in the Windows argv↔codepage
    translation, so Discord rejects it with `400 {"code":50109}`. Fix: pipe the
-   payload over stdin — `printf '%s' "$payload" | curl … --data-binary @-`.
+   payload over stdin. `printf '%s' "$payload" | curl … --data-binary @-`.
 2. **jq.exe emits CRLF.** Every value captured from jq into a shell variable
    gets a trailing `\r`. On `transcript_path` that makes `[ -f "$transcript" ]`
    fail, silently skipping the entire metrics-parsing block (no model / tokens /
-   tools / cost — only Project shows). Fix: pipe jq output through `tr -d '\r'`.
+   tools / cost, only Project shows). Fix: pipe jq output through `tr -d '\r'`.
 3. **`@tsv` doubles backslashes.** jq's `@tsv` escapes `\` → `\\`, so a Windows
    path `C:\Users\…` becomes `C:\\Users\\…` and won't open. Fix: read each field
    with a separate `jq -r` (which keeps single backslashes) instead of one

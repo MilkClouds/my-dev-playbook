@@ -1,13 +1,13 @@
 # Migrate from oh-my-claudecode to claude-pace statusline
 
-Remove [oh-my-claudecode](https://github.com/oh-my-claudecode/oh-my-claudecode) (OMC) and install [Astro-Han/claude-pace](https://github.com/Astro-Han/claude-pace) as the Claude Code statusline. Idempotent — safe to re-run on partially-cleaned hosts.
+Remove [oh-my-claudecode](https://github.com/oh-my-claudecode/oh-my-claudecode) (OMC) and install [Astro-Han/claude-pace](https://github.com/Astro-Han/claude-pace) as the Claude Code statusline. Idempotent; safe to re-run on partially-cleaned hosts.
 
-## Prerequisites — confirm before running
+## Prerequisites: confirm before running
 
 1. **OS**: Linux / macOS / Windows (git-bash). Windows users should run `python` (the `python3` on `PATH` is often the Microsoft Store stub).
-2. **`jq`**: claude-pace requires it. `which jq` — if missing, see [Step 8](#8-install-jq-if-missing).
+2. **`jq`**: claude-pace requires it. `which jq`; if missing, see [Step 8](#8-install-jq-if-missing).
 3. **Scattered `.omc/` scope**: run `find ~ -maxdepth 7 -type d -name ".omc"` first and decide whether to wipe everything or only your workspace. Sync folders (OneDrive, iCloud, Dropbox) may hold per-project notepads/research you want to keep.
-4. **Plugin-installed OMC?**: `grep -E "enabledPlugins|oh-my-claudecode" ~/.claude/settings.json`. If OMC is registered in `enabledPlugins`, [Step 6](#6-update-settingsjson--plugin-metadata) is mandatory — otherwise Claude Code re-installs it on next plugin reload.
+4. **Plugin-installed OMC?**: `grep -E "enabledPlugins|oh-my-claudecode" ~/.claude/settings.json`. If OMC is registered in `enabledPlugins`, [Step 6](#6-update-settingsjson--plugin-metadata) is mandatory; otherwise Claude Code re-installs it on next plugin reload.
 
 ## Pitfalls
 
@@ -15,7 +15,7 @@ Remove [oh-my-claudecode](https://github.com/oh-my-claudecode/oh-my-claudecode) 
 - **`.omc-managed` skill directories**: `~/.claude/skills/<name>/.omc-managed` marks an OMC-owned skill. Removing only the marker leaves the skill orphaned; remove the whole directory.
 - **`find -exec rm -rf {} +` returns exit 0 even on partial failure**: synced or non-ASCII paths sometimes fail. Re-scan in [Step 7](#7-verify) and retry individual paths.
 - **Windows `cp949` stdout**: Python `print` of non-ASCII characters (em-dash, etc.) crashes on Windows shells. Use `PYTHONIOENCODING=utf-8` and ASCII-only.
-- **Windows statusLine command**: `~/.claude/statusline.sh` in `settings.json` may not work — Windows Claude Code may not expand `~` or execute `.sh` directly. [Step 6](#6-update-settingsjson--plugin-metadata) writes an absolute `bash <path>` wrapper on Windows.
+- **Windows statusLine command**: `~/.claude/statusline.sh` in `settings.json` may not work; Windows Claude Code may not expand `~` or execute `.sh` directly. [Step 6](#6-update-settingsjson--plugin-metadata) writes an absolute `bash <path>` wrapper on Windows.
 
 ## 1. Survey (read-only)
 
@@ -207,6 +207,6 @@ If the statusline appears blank on Windows after restart, edit `~/.claude/settin
 
 ## Notes
 
-- `~/.codex/prompts/sisyphus-lite.md`, if present, may have been installed by OMC. Confirm with the user before removing — it might be in use by an unrelated tool (e.g. `omx`).
+- `~/.codex/prompts/sisyphus-lite.md`, if present, may have been installed by OMC. Confirm with the user before removing; it might be in use by an unrelated tool (e.g. `omx`).
 - The `find $HOME -maxdepth 7` depth may miss deeply nested workspaces. Increase it if the survey output looks incomplete.
 - pixi global install can fail with `No candidates were found for jq *` even when conda-forge is the configured channel; the static binary fallback is the most reliable route.

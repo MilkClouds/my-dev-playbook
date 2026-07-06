@@ -1,12 +1,12 @@
 ---
 name: editable-pptx
-description: Build fully editable PowerPoint (.pptx) decks from code — native textboxes, shapes, tables, charts, and real PowerPoint equations (LaTeX→OMML) — so the result stays editable in PowerPoint instead of being flat images. Use this whenever the user wants to make, generate, build, or rebuild a slide deck, presentation, or .pptx, including turning notes, a paper, a markdown outline, or an HTML deck into slides, adding editable equations to slides, or producing a deck programmatically — even if they don't say "pptx" explicitly. Prefer it over exporting images or hand-placing text boxes. Triggers on "make/build slides", "presentation", "slide deck", "pptx", "editable slides", "PowerPoint equations", "turn this into slides".
+description: Build fully editable PowerPoint (.pptx) decks from code: native textboxes, shapes, tables, charts, and real PowerPoint equations (LaTeX→OMML), so the result stays editable in PowerPoint instead of being flat images. Use this whenever the user wants to make, generate, build, or rebuild a slide deck, presentation, or .pptx, including turning notes, a paper, a markdown outline, or an HTML deck into slides, adding editable equations to slides, or producing a deck programmatically, even if they don't say "pptx" explicitly. Prefer it over exporting images or hand-placing text boxes. Triggers on "make/build slides", "presentation", "slide deck", "pptx", "editable slides", "PowerPoint equations", "turn this into slides".
 ---
 
 # editable-pptx
 
-Generate decks where **every element is a native, editable PowerPoint object** —
-text is a textbox, boxes/dividers are shapes, tables/charts are native — plus
+Generate decks where **every element is a native, editable PowerPoint object**:
+text is a textbox, boxes/dividers are shapes, tables/charts are native, plus
 **real PowerPoint equations** (not pictures). Reproducible from a build script.
 
 This is an original toolkit (MIT). It does **not** copy or derive from Anthropic's
@@ -32,7 +32,7 @@ examples/              runnable example_deck.js + equations.json
 3. **Build**: `node <deck>.js` → `.pptx`.
 4. **Add native equations** (optional): `python scripts/add_equations.py in.pptx out.pptx equations.json`.
 5. **QA**: `scripts/render.py` (preview montage) and `scripts/check.py` (overlap/overflow).
-6. **Hand the .pptx to the user to confirm in real PowerPoint** — the QA renderer
+6. **Hand the .pptx to the user to confirm in real PowerPoint**: the QA renderer
    is LibreOffice, which is not pixel-truth for fonts or equations.
 
 ## Setup
@@ -84,9 +84,9 @@ inline OMML means splitting runs and is rarely worth it.
 ## Limitations
 
 - **LibreOffice QA ≠ PowerPoint.** It substitutes missing fonts and renders OMML
-  approximately — always confirm the final file in real PowerPoint.
+  approximately; always confirm the final file in real PowerPoint.
 - **Fonts:** decks default to IBM Plex; PowerPoint substitutes if absent. Pass your
   own `fonts`, or embed fonts on save when sharing.
-- **Absolute layout** (inches): content changes can overflow — `check.py` catches it.
+- **Absolute layout** (inches): content changes can overflow; `check.py` catches it.
 - **LibreOffice AppImage** comes from a third-party mirror by default; override
   `LO_APPIMAGE_URL` or install LibreOffice from your distro for trust.

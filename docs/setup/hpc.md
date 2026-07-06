@@ -30,7 +30,7 @@ Install [smon](https://github.com/MilkClouds/smon), a custom Slurm cluster monit
 
 ## VS Code Remote-SSH
 
-Cluster nodes share `~` over NFS, so they share one `~/.vscode-server`. When the VS Code client updates, every node races to migrate that folder to the new server version at once — the concurrent writes corrupt it and Remote-SSH breaks (`Refused to connect to unsupported server`, dropped connections, runaway `command-shell` processes).
+Cluster nodes share `~` over NFS, so they share one `~/.vscode-server`. When the VS Code client updates, every node races to migrate that folder to the new server version at once; the concurrent writes corrupt it and Remote-SSH breaks (`Refused to connect to unsupported server`, dropped connections, runaway `command-shell` processes).
 
 Redirect the folder to node-local disk. The symlink lives on the shared home, but its target is an absolute path, so each node resolves it to its own `/var/tmp`.
 

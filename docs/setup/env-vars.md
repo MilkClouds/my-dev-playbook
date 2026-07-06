@@ -1,6 +1,6 @@
 # User-Level Environment Variables
 
-Use `~/.config/environment.d/*.conf` for shell-agnostic variables (XDG, paths, tokens). systemd-logind loads them at session start, so they reach interactive shells, scripts, and any non-shell process started from the session — no `export` keyword, no shell-specific file. On modern Linux (including most shared clusters), SSH logins go through logind, so this works out of the box.
+Use `~/.config/environment.d/*.conf` for shell-agnostic variables (XDG, paths, tokens). systemd-logind loads them at session start, so they reach interactive shells, scripts, and any non-shell process started from the session: no `export` keyword, no shell-specific file. On modern Linux (including most shared clusters), SSH logins go through logind, so this works out of the box.
 
 ## Format
 

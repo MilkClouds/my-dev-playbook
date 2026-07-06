@@ -28,11 +28,11 @@ git commit -m "$COMMIT_MSG"
 
 ## Detecting conflict resolution in merge commits
 
-A merge commit with no unique changes is safe to skip — the child commits already carry everything. But conflict resolutions only exist in the merge commit itself.
+A merge commit with no unique changes is safe to skip; the child commits already carry everything. But conflict resolutions only exist in the merge commit itself.
 
 ```bash
 # Show what the merge introduced relative to its first parent
 git show --diff-merges=first-parent --stat <merge_hash>
 ```
 
-If the output is empty, skip safely. If it shows file changes, those are conflict resolutions (or "evil merges") — present the diff to the user for review.
+If the output is empty, skip safely. If it shows file changes, those are conflict resolutions (or "evil merges"); present the diff to the user for review.

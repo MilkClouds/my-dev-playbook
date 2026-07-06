@@ -2,11 +2,11 @@
 
 `pixi global install` / `uv tool install` for docker images, via [Charliecloud](https://charliecloud.io/latest/index.html).
 
-Given a docker image with one or more useful binaries inside (e.g. `texlive/texlive:latest-full` contains `latexmk`, `pdflatex`, `latexindent`, ...), `whalebin install` exposes those binaries to your `PATH` as thin wrapper scripts. Typing `latexmk file.tex` on the host transparently runs `latexmk` inside the container as you (host UID), with `$HOME`, `$PWD`, and `/tmp` auto-mounted at the same paths — so file ownership and absolute path references just work.
+Given a docker image with one or more useful binaries inside (e.g. `texlive/texlive:latest-full` contains `latexmk`, `pdflatex`, `latexindent`, ...), `whalebin install` exposes those binaries to your `PATH` as thin wrapper scripts. Typing `latexmk file.tex` on the host transparently runs `latexmk` inside the container as you (host UID), with `$HOME`, `$PWD`, and `/tmp` auto-mounted at the same paths, so file ownership and absolute path references just work.
 
 ## Install
 
-Prerequisite: `charliecloud` on PATH. Build from upstream's GitLab release tarball — the conda-forge feedstock is stale (see [conda-forge/charliecloud-feedstock#24](https://github.com/conda-forge/charliecloud-feedstock/pull/24)):
+Prerequisite: `charliecloud` on PATH. Build from upstream's GitLab release tarball; the conda-forge feedstock is stale (see [conda-forge/charliecloud-feedstock#24](https://github.com/conda-forge/charliecloud-feedstock/pull/24)):
 
 ```sh
 wget https://gitlab.com/charliecloud/charliecloud/-/package_files/290882913/download -O charliecloud-0.44.tar.gz
