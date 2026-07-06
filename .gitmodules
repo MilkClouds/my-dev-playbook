@@ -1,0 +1,3 @@
+[submodule "tools/md-to-github-pdf"]
+	path = tools/md-to-github-pdf
+	url = https://github.com/MilkClouds/md-to-github-pdf

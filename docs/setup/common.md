@@ -45,7 +45,7 @@ Install once, use system-wide. **On shared clusters, never touch system packages
 
 - **Installers** (meta layer — tools whose job is to install other tools):
   - **[uv](https://github.com/astral-sh/uv) (`uv tool install`)** *(minimal)*: For pypi-distributed CLIs. Installs each tool in its own isolated env. Same `uv` binary covered in [Package Management](#package-management) below — this is its global-tool side.
-  - **[npm](https://github.com/npm/cli) (`npm install -g`)** *(minimal)*: Comes bundled with Node.js (installed via nvm — see [Package Management](#package-management)). Used to install Node-distributed CLIs globally.
+  - **[pnpm](https://github.com/pnpm/pnpm) (`pnpm add -g`)** *(minimal)*: For Node-distributed CLIs. Install via `pixi global install pnpm` (kept fresh by `pixi global update`; needs `PNPM_HOME/bin` on `PATH`). Chosen over `npm install -g`: pnpm links CLIs from a shared store instead of overwriting binaries in place, so updates never hit `EBUSY` when a long-running process holds the old binary (common on NFS homes). Install via pixi, **not** pnpm's official `curl | sh` script — that script mis-registers pnpm as a temp-dir link that breaks (and can brick) `pnpm update -g` ([pnpm#11473](https://github.com/pnpm/pnpm/issues/11473)); a package-manager install sidesteps it.
   - **[pixi](https://github.com/prefix-dev/pixi) (`pixi global install`)** *(minimal)*: Conda-forge backed cross-language installer. Default choice for non-pypi global CLIs (e.g., `pixi global install gh` for the GitHub CLI).
   - **[cargo](https://github.com/rust-lang/cargo) (`cargo install`)** *(full)*: Rust's package installer. Install when you need a Rust-distributed CLI; requires the Rust toolchain ([`rustup`](https://github.com/rust-lang/rustup)). Pair with [`cargo-update`](https://github.com/nabijaczleweli/cargo-update) for `cargo install-update -a` to bulk-upgrade everything cargo installed.
   - **[whalebin](https://github.com/MilkClouds/my-dev-playbook/tree/main/tools/whalebin) (`whalebin install`)** *(as-needed)*: For binaries that live inside a docker image rather than as a native package. Generates wrapper scripts in `~/.local/bin/` that invoke `ch-run` (Charliecloud) so containerized binaries behave like host-installed CLIs — daemonless, rootless, with `$HOME`/`$PWD`/`/tmp` auto-mounted. Requires [`charliecloud`](https://charliecloud.io/latest/index.html) on PATH (see System CLIs > as-needed). Install with `uv tool install --from "git+https://github.com/MilkClouds/my-dev-playbook.git#subdirectory=tools/whalebin" whalebin` (or local: `uv tool install --from ~/GitHub/my-dev-playbook/tools/whalebin whalebin`).
@@ -64,15 +64,17 @@ Install once, use system-wide. **On shared clusters, never touch system packages
 
 ```bash
 uv self update && uv tool upgrade --all \
-  && npm update -g \
+  && pnpm update -g --ignore-scripts \
   && pixi self-update && pixi global update \
   && cargo install-update -a
 ```
 
+`--ignore-scripts` keeps `pnpm update -g` non-interactive and respects pnpm's build-script gate (blocked by default for supply-chain safety); if a global CLI needs its postinstall (e.g. a fetched binary), approve just that one with `pnpm add -g --allow-build=<pkg> <pkg>`.
+
 ## Package Management
 
 - **Python** *(minimal)*: Install [uv](https://github.com/astral-sh/uv). Use `uv venv`/`uv pip`/`uv run` for projects. (For its global-CLI side `uv tool install`, see [Tool Management](#tool-management) above.)
-- **Node.js** *(minimal)*: Install [nvm](https://github.com/nvm-sh/nvm). Brings npm with it (see [Tool Management](#tool-management) above) and is needed for Claude Code's MCP servers that ship as npx packages.
+- **Node.js** *(minimal)*: Install [nvm](https://github.com/nvm-sh/nvm) — owns the `node` runtime and brings `npm` (still used for `npx`, e.g. Claude Code's MCP servers). Global Node CLIs install via [pnpm](#tool-management), not `npm -g`.
 - **JVM** *(as-needed)*: Install [sdkman](https://sdkman.io/).
 - **Conda** *(as-needed)*: Install [Miniforge](https://github.com/conda-forge/miniforge) when a project depends on the conda ecosystem (most common in Python, but conda-forge serves many languages — R, C/C++, Julia, etc.).
 

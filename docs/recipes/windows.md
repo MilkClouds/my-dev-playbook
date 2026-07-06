@@ -52,7 +52,7 @@ When considering moving a CLI from choco to pixi, **verify a win-64 build exists
 
 ## (3) choco
 
-[Chocolatey](https://github.com/chocolatey/choco) is the fifth tool manager added on Windows (in addition to common.md's `uv` / `npm` / `pixi` / `cargo`). Requires an admin shell.
+[Chocolatey](https://github.com/chocolatey/choco) is the fifth tool manager added on Windows (in addition to common.md's `uv` / `pnpm` / `pixi` / `cargo`). Requires an admin shell.
 
 ### Windows-only CLIs and system services
 
