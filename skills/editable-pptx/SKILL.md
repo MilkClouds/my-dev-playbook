@@ -41,7 +41,7 @@ examples/              runnable example_deck.js + equations.json
 bash scripts/setup.sh
 ```
 
-Installs `pptxgenjs` (npm, from `package.json`), a uv venv at `.tools/venv` with
+Installs `pptxgenjs` (pnpm, from `package.json`), a uv venv at `.tools/venv` with
 `python-pptx`/`pymupdf`/`pillow`, checks `pandoc`, and uses system LibreOffice or
 extracts a LibreOffice AppImage into `.tools/`. Needs **node**, **uv** (or pip),
 and **pandoc** (only for equations) on PATH.

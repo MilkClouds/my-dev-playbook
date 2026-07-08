@@ -1,6 +1,6 @@
 # toolchain + build artifacts (re-creatable: `bash scripts/setup.sh` + build commands)
 node_modules/
-package-lock.json
+pnpm-lock.yaml
 .tools/
 
 # generated decks / QA output

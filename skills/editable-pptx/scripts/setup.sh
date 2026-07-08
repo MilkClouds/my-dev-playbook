@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install the editable-pptx toolchain locally (no sudo). Idempotent.
-#   - pptxgenjs (npm, local)             : build the deck
+#   - pptxgenjs (pnpm, local)            : build the deck
 #   - python-pptx / pymupdf / pillow (uv): QA scripts
 #   - pandoc                             : LaTeX -> native equations (must be on PATH)
 #   - LibreOffice (system, else AppImage): render pptx -> pdf -> png for QA
@@ -10,7 +10,7 @@ TOOLS="$HERE/.tools"
 mkdir -p "$TOOLS"
 
 echo "[1/4] node deps (pptxgenjs, from package.json)"
-( cd "$HERE" && npm install --no-fund --no-audit )
+( cd "$HERE" && pnpm install )
 
 echo "[2/4] python QA deps (uv venv at .tools/venv)"
 if command -v uv >/dev/null 2>&1; then
