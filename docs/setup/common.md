@@ -64,12 +64,12 @@ Install once, use system-wide. **On shared clusters, never touch system packages
 
 ```bash
 uv self update && uv tool upgrade --all \
-  && npm install -g pnpm@latest && pnpm update -g --ignore-scripts \
+  && npm install -g pnpm@latest && pnpm update -g --latest --ignore-scripts \
   && pixi self-update && pixi global update \
   && cargo install-update -a
 ```
 
-`--ignore-scripts` keeps `pnpm update -g` non-interactive and respects pnpm's build-script gate (blocked by default for supply-chain safety); if a global CLI needs its postinstall (e.g. a fetched binary), approve just that one with `pnpm add -g --allow-build=<pkg> <pkg>`.
+`--latest` crosses semver ranges — without it, plain `pnpm update` never bumps a `^0.x` CLI past its minor (`0.142`→`0.143`); the default 24h [`minimumReleaseAge`](https://pnpm.io/settings#minimumreleaseage) cooldown still applies. `--ignore-scripts` keeps `pnpm update -g` non-interactive and respects pnpm's build-script gate (blocked by default for supply-chain safety); if a global CLI needs its postinstall (e.g. a fetched binary), approve just that one with `pnpm add -g --allow-build=<pkg> <pkg>`.
 
 ## Package Management
 
