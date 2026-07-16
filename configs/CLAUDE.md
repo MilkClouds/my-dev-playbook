@@ -44,6 +44,8 @@ Comments are terse and only when non-obvious; prefer code that doesn't need them
 | Codex GPT-5.6 (Sol/Terra/Luna) | $5/$30 · $2.5/$15 · $1/$6 | FIRST choice for delegated implementation; best terminal/infra automation and performance-per-dollar |
 
 - Routing: Fable orchestrates/specs/reviews → implementation goes to **Codex first**, Opus as fallback → Sonnet for bulk chores. If a delegate thrashes twice on the same bug, escalate the task back up a tier.
+- Codex delegation: call `codex-companion.mjs task "<task>" --write` directly — a full work-order given to `codex-rescue` makes its sonnet wrapper do the work itself instead of forwarding.
+- Verify the route after dispatch: no task text in `~/.codex/sessions/<date>/rollout-*.jsonl` means Codex never ran.
 - **Request a Codex review for every unit of work** (each PR/commit-sized change) before treating it as done — use Claude Code's openai-codex plugin (`codex:codex-rescue` subagent / `/codex` skills). Triage its findings; don't apply blindly.
 
 ## Testing Discipline
