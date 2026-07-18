@@ -30,6 +30,7 @@ Optional, scenario-specific setups. Apply only when you need them.
 - **[docs/recipes/mobile-tmux/](docs/recipes/mobile-tmux/)**: Authenticated mobile browser access to tmux via `ttyd` + cookie auth proxy.
 - **[docs/recipes/windows.md](docs/recipes/windows.md)**: Windows 11 package install method decisions (installer / pixi / choco). *Experimental.*
 - **[docs/recipes/discord-task-notifications/](docs/recipes/discord-task-notifications/)**: Stop / Notification / UserPromptSubmit hooks that post Discord embeds when Claude Code finishes a long task. Debounced to silence when you're at the terminal; per-turn token + USD cost via ccusage pricing catalog.
+- **[docs/recipes/codex-discord-task-notifications/](docs/recipes/codex-discord-task-notifications/)**: Self-contained Codex `notify` handler for debounced Discord turn-completion alerts. Node built-ins only; no Claude plugin, ccusage-worv, or Oh My Codex dependency.
 - **[docs/recipes/pretty-git-diffs/](docs/recipes/pretty-git-diffs/)**: Syntax-highlighted git diffs via delta + lazygit, across the CLI, the lazygit TUI, and inside Claude Code's `!` bash (with the non-TTY color workaround).
 - **[docs/recipes/claude-code/](docs/recipes/claude-code/)**: Claude Code workflow notes: MCP update flow and the `/simplify` history reconstruction.
 
