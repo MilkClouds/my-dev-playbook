@@ -52,3 +52,10 @@ Comments are terse and only when non-obvious; prefer code that doesn't need them
 
 - If you write code, suggest writing or running tests to verify correctness.
 - Always suggest writing or updating tests after making code edits.
+
+## Research and Source Discipline
+
+- **Never judge a paper from its title or abstract alone.** Before citing, tiering, summarizing, comparing, or making any claim about a paper, read the relevant body sections (method, data, results). Title/abstract reading is never a substitute for reading the actual content.
+- Web search and Perplexity (`perplexity_ask` / `perplexity_search`) are useful for *discovery and triage* but **low-trust for content** — never take their summaries or snippets as fact. Find the primary paper and read its body to verify before using any claim.
+- When a decision (citation, data-mixture choice, source tiering, "X does/doesn't work") rests on a paper, state your reading depth honestly — body-read vs snippet-level vs unverified.
+- If you cannot access the body text, say so explicitly and mark the claim as unverified rather than asserting it.
