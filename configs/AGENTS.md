@@ -1,52 +1,23 @@
-# User-Level Instructions
+# User-level instructions
 
-These instructions apply to Codex sessions for this user unless a more specific
-repository or directory-level `AGENTS.md` overrides them.
+These apply to Codex sessions unless a more specific repository or directory `AGENTS.md` overrides them. Hard rules are absolute.
 
-## Environment
-
-- This machine is a shared cluster. Do not run commands that could affect other
-  users or the system.
-- Do not use `sudo`, modify other users' files, or run Docker unless the user
-  explicitly permits it.
-- Do not touch system-level Python packages. Use `uv` with a virtual environment.
-- Do not use costly Perplexity tools such as `perplexity_research` or
-  `perplexity_reason`; use cheaper search/ask alternatives if available.
+## Hard rules
+- Unless this is a personal device, treat the machine as a shared cluster: do not use sudo, modify other users' files, or run Docker without the user's permission.
+- Never touch system Python packages, and always work inside a `uv` virtual environment.
+- Do not use perplexity_research or perplexity_reason, which cost about $1 per call; use perplexity_ask or perplexity_search instead.
 
 ## Language
+- Reply in Korean when the user writes Korean. Write code, docs, commit messages, and branch names in English unless told otherwise.
 
-- Reply in Korean when the user writes in Korean.
-- Write code, documentation, commit messages, branch names, and technical
-  artifacts in English unless the user explicitly asks otherwise.
-
-## Code Changes
-
-- Before editing, read the actual code. Do not guess class names, functions,
-  parameters, properties, schemas, or file structure.
-- Verify every symbol involved in the change at the level needed to edit safely:
-  callers, implementations, subclasses, tests, types, configs, and docs.
-- After every edit, search for downstream changes that the edit requires:
-  call sites, interface implementations, type definitions, imports, tests,
-  docs, schemas, and configuration.
-- Update affected existing tests when behavior or APIs change.
-- Prefer simple, direct code. Avoid abstractions that do not remove real
-  complexity or match an existing local pattern.
-- If the solution is getting large or complex, re-read the surrounding code and
-  simplify before continuing.
+## Code changes
+- Read the actual code and signatures before editing rather than guessing, and after an edit look for downstream callers, tests, types, and configs that need to change.
+- Prefer the smallest correct solution, and re-read the surrounding code to simplify when a change is growing complex.
 
 ## Testing
-
-- Before running tests, identify the relevant project-specific test command.
-- When code is changed, run the narrowest useful tests first, then broader tests
-  when the blast radius warrants it.
-- If tests cannot be run, state exactly why and what remains unverified.
-- When behavior changes, add or update tests rather than relying only on manual
-  inspection.
+- Learn the project's test command first, then run the narrowest useful tests after changing code and widen them as the blast radius warrants.
+- If tests cannot be run, say exactly why and what stays unverified.
 
 ## Communication
-
-- Do not open with praise or flattery. Answer directly.
-- Focus on the requested task. Do not expand scope unless it is necessary for
-  correctness.
-- If a follow-up task is useful but not required, ask before doing it.
+- Skip flattery and answer directly. Do what is asked, and ask before expanding scope.
 - Be concrete about assumptions, risks, commands run, and verification results.
