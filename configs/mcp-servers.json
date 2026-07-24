@@ -1,40 +1,57 @@
 {
   "mcpServers": {
     "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
+      "command": "pnpm",
+      "args": ["dlx", "@upstash/context7-mcp"],
+      "timeout": 30000
     },
     "arxiv-mcp-server": {
       "command": "uv",
-      "args": ["tool", "run", "--with", "git+https://github.com/blazickjp/arxiv-mcp-server.git", "arxiv-mcp-server", "--storage-path", "/tmp/arxiv-mcp-server"]
+      "args": ["tool", "run", "--with", "git+https://github.com/blazickjp/arxiv-mcp-server.git", "arxiv-mcp-server", "--storage-path", "/tmp/arxiv-mcp-server"],
+      "timeout": 30000
     },
     "perplexity": {
-      "command": "npx",
-      "args": ["-y", "@perplexity-ai/mcp-server"],
-      "env": { "PERPLEXITY_API_KEY": "<key>" }
+      "command": "pnpm",
+      "args": ["dlx", "@perplexity-ai/mcp-server"],
+      "env": { "PERPLEXITY_API_KEY": "<key>" },
+      "timeout": 30000
     },
     "semantic-scholar-mcp": {
       "command": "uv",
       "args": ["tool", "run", "--with", "git+https://github.com/MilkClouds/semantic-scholar-mcp", "semantic-scholar-mcp", "serve"],
-      "env": { "SEMANTIC_SCHOLAR_API_KEY": "<key>" }
+      "env": { "SEMANTIC_SCHOLAR_API_KEY": "<key>" },
+      "timeout": 30000
     },
     "pdf-reader": {
-      "command": "npx",
-      "args": ["-y", "@sylphx/pdf-reader-mcp"]
+      "command": "pnpm",
+      "args": ["dlx", "@sylphx/pdf-reader-mcp"],
+      "timeout": 30000
     },
     "github": {
-      "command": "docker",
-      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
-      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "<token>" }
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer <token>" },
+      "timeout": 30000
     },
     "sequential-thinking": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "timeout": 120000
     },
     "notion-mcp-server": {
-      "command": "npx",
-      "args": ["-y", "@notionhq/notion-mcp-server"],
-      "env": { "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer <key>\", \"Notion-Version\": \"2025-09-03\"}" }
+      "command": "pnpm",
+      "args": ["dlx", "@notionhq/notion-mcp-server"],
+      "env": { "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer <key>\", \"Notion-Version\": \"2025-09-03\"}" },
+      "timeout": 30000
+    },
+    "outline": {
+      "command": "pnpm",
+      "args": ["--package=outline-mcp-server", "dlx", "outline-mcp-server-stdio"],
+      "env": {
+        "OUTLINE_API_KEY": "<key>",
+        "OUTLINE_API_URL": "<url>"
+      },
+      "timeout": 30000
     }
   }
 }

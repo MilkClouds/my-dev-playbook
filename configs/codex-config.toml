@@ -17,3 +17,69 @@ goals = true
 [tui]
 status_line = ["model-with-reasoning", "current-dir", "project-name", "git-branch", "pull-request-number", "branch-changes", "context-used", "five-hour-limit", "weekly-limit"]
 status_line_use_colors = true
+
+# Replace credential placeholders before merging this file into ~/.codex/config.toml.
+# Node packages are unpinned; startup timeout is 30s unless noted.
+
+[mcp_servers.arxiv-mcp-server]
+command = "uv"
+args = ["tool", "run", "--with", "git+https://github.com/blazickjp/arxiv-mcp-server.git", "arxiv-mcp-server", "--storage-path", "/tmp/arxiv-mcp-server"]
+startup_timeout_sec = 30.0
+
+[mcp_servers.context7]
+command = "pnpm"
+args = ["dlx", "@upstash/context7-mcp"]
+startup_timeout_sec = 30.0
+
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+http_headers = { Authorization = "Bearer <token>" }
+startup_timeout_sec = 30.0
+
+[mcp_servers.notion-mcp-server]
+command = "pnpm"
+args = ["dlx", "@notionhq/notion-mcp-server"]
+startup_timeout_sec = 30.0
+
+[mcp_servers.notion-mcp-server.env]
+OPENAPI_MCP_HEADERS = """{
+  "Authorization": "Bearer <key>",
+  "Notion-Version": "2025-09-03"
+}"""
+
+[mcp_servers.outline]
+command = "pnpm"
+args = ["--package=outline-mcp-server", "dlx", "outline-mcp-server-stdio"]
+startup_timeout_sec = 30.0
+
+[mcp_servers.outline.env]
+OUTLINE_API_KEY = "<key>"
+OUTLINE_API_URL = "<url>"
+
+[mcp_servers.pdf-reader]
+command = "pnpm"
+args = ["dlx", "@sylphx/pdf-reader-mcp"]
+startup_timeout_sec = 30.0
+
+[mcp_servers.perplexity]
+command = "pnpm"
+args = ["dlx", "@perplexity-ai/mcp-server"]
+startup_timeout_sec = 30.0
+disabled_tools = ["perplexity_research", "perplexity_reason"]
+
+[mcp_servers.perplexity.env]
+PERPLEXITY_API_KEY = "<key>"
+
+[mcp_servers.semantic-scholar-mcp]
+command = "uv"
+args = ["tool", "run", "--with", "git+https://github.com/MilkClouds/semantic-scholar-mcp", "semantic-scholar-mcp", "serve"]
+startup_timeout_sec = 30.0
+
+[mcp_servers.semantic-scholar-mcp.env]
+SEMANTIC_SCHOLAR_API_KEY = "<key>"
+
+[mcp_servers.sequential-thinking]
+# npx tracks latest; registry resolution needs a larger timeout.
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+startup_timeout_sec = 120.0
