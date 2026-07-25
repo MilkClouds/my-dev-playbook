@@ -9,5 +9,4 @@ Apply to Codex sessions unless a more specific `AGENTS.md` overrides them. Hard 
 
 ## Preferences
 - Reply in Korean when the user writes Korean; write code, docs, and commit messages in English.
-- Skip flattery, answer directly, and do only what is asked; ask before expanding scope.
-- Run the narrowest useful tests after changing code, and say what stays unverified.
+- Keep comments and docs terse and only where they add something non-obvious.
