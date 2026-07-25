@@ -91,8 +91,8 @@ Layered stack: a base agentic CLI per provider, an orchestration layer on top, a
   - **[claude-pace](https://github.com/Astro-Han/claude-pace)** *(minimal)*: Single-file bash statusline showing 5h/7d quota usage with pace delta, context bar, and git diff stats.
   - **Configs** *(minimal)*: apply after Claude Code is installed; all four configure Claude Code itself:
     - [`claude-plugins.json`](../../configs/claude-plugins.json). Plugin marketplace enablement. Turns on [`claude-pace`](https://github.com/Astro-Han/claude-pace), [`skill-creator`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), [`fetch-bib`](https://github.com/MilkClouds/fetch-bib), and the [`codex` plugin](https://github.com/openai/codex-plugin-cc) (lets you call Codex from within Claude Code as a subagent for second opinions; only takes effect when the [Codex stack](#codex-stack) below is also installed).
-    - [`mcp-servers.json`](../../configs/mcp-servers.json). Claude Code MCP servers. Node packages are unpinned; timeouts are milliseconds. Replace credential placeholders before merging.
-    - [`claude-settings.json`](../../configs/claude-settings.json). Claude Code settings, including the 120-second MCP startup ceiling. Merge into `~/.claude/settings.json`.
+    - [`mcp-servers.json`](../../configs/mcp-servers.json). Claude Code MCP servers. Node packages are unpinned. Replace credential placeholders before merging.
+    - [`claude-settings.json`](../../configs/claude-settings.json). Claude Code settings. Merge into `~/.claude/settings.json`.
     - [`CLAUDE.md`](../../configs/CLAUDE.md). User-level Claude Code memory file. Global instructions, language preference, environment constraints.
   - **Commands** *(as-needed)*: slash commands. Install by copying into `~/.claude/commands/`:
     - [`/sf`](../../.claude/commands/sf.md). Pre-2.1.147 `/simplify` (3 parallel review agents + direct fix). Built-in `/simplify` now only reports. Background: [`docs/recipes/claude-code/simplify-history/`](../../docs/recipes/claude-code/simplify-history/).

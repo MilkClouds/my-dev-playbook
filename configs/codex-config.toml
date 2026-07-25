@@ -19,7 +19,7 @@ status_line = ["model-with-reasoning", "current-dir", "project-name", "git-branc
 status_line_use_colors = true
 
 # Replace credential placeholders before merging this file into ~/.codex/config.toml.
-# Node packages are unpinned; startup timeout is 30s unless noted.
+# Node packages are unpinned; startup timeout is 30s for every server.
 
 [mcp_servers.arxiv-mcp-server]
 command = "uv"
@@ -79,7 +79,6 @@ startup_timeout_sec = 30.0
 SEMANTIC_SCHOLAR_API_KEY = "<key>"
 
 [mcp_servers.sequential-thinking]
-# npx tracks latest; registry resolution needs a larger timeout.
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-startup_timeout_sec = 120.0
+startup_timeout_sec = 30.0
