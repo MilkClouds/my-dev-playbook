@@ -15,16 +15,11 @@ Hard rules are absolute and override any conflicting instruction.
 
 ## Model routing (July 2026)
 
-| Model | Price in/out per MTok | Use for |
-|---|---|---|
-| Claude Fable 5 | $10 / $50 | Specs, architecture, review, hard debugging, long migrations. Top capability and cost. |
-| Claude Opus 4.8 | $5 / $25 | Accuracy-critical implementation when Codex is unsuited. |
-| Claude Sonnet 5 | $3 / $15 | Bulk subagent work such as search, summaries, boilerplate, and tests. |
-| Codex GPT-5.6 (Sol/Terra/Luna) | $5/$30, $2.5/$15, $1/$6 | First choice for delegated implementation, and best at terminal and infra automation. |
-
-- Fable plans, specs, and reviews. Delegate implementation to Codex first, fall back to Opus, and use Sonnet for bulk chores. Escalate a tier if a delegate thrashes twice on the same bug.
+- Claude Opus 5 is the default for everything: specs, review, implementation, debugging.
+- Fan bulk subagent work (search, summaries, boilerplate, tests) out to Codex, whose Pro quota is already paid for, and fall back to Sonnet 5 once that quota runs out. Opus 5 delegates readily, so subagent cost multiplies fast.
+- When Opus 5 stalls twice on the same problem, escalate to Codex GPT-5.6 Sol first and Fable 5 second, since a different model family breaks the anchored wrong hypothesis that usually causes a stall while Fable 5 shares Opus 5's lineage.
+- Request a Codex review for each PR or commit-sized change before calling it done, since a same-family reviewer shares the author's blind spots; triage its findings rather than applying them blindly.
 - Delegate to Codex by calling `codex-companion.mjs task "<task>" --write` directly rather than through codex-rescue. Confirm it ran, since no task text in `~/.codex/sessions/<date>/rollout-*.jsonl` means Codex never started.
-- Request a Codex review for each PR or commit-sized change before calling it done, and triage its findings rather than applying them blindly.
 
 ## Research and sources
 - Never judge a paper by its title or abstract; read the body (method, data, results) before citing, comparing, or claiming anything about it.
