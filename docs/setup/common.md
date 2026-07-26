@@ -101,6 +101,6 @@ Layered stack: a base agentic CLI per provider, an orchestration layer on top, a
   - **[oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) (`omx`)** *(as-needed)*: Multi-agent orchestration layer on top of Codex. Requires Codex.
   - **Configs** *(as-needed)*: apply after Codex is installed:
     - [`codex-config.toml`](../../configs/codex-config.toml). User-level Codex config, including MCP servers. Replace credentials and merge machine-local trust entries.
-    - [`AGENTS.md`](../../configs/AGENTS.md). User-level Codex instructions for `~/.codex/AGENTS.md`: cluster constraints, Korean response preference, code-change discipline, testing expectations, and concise communication style.
+    - [`AGENTS.md`](../../configs/AGENTS.md). User-level Codex instructions for `~/.codex/AGENTS.md`: cluster constraints, Korean response preference, and comment brevity.
 - **Cross-cutting**:
   - **[agf](https://github.com/subinium/agf)** *(full)*: AI Agent Session Finder. Locates and manages running agent sessions across both CLIs.
