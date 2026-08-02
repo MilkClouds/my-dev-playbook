@@ -120,6 +120,7 @@ def _print_env_text(name: str, cfg: dict) -> None:
 
 
 def _require_backend() -> None:
+    os.environ.setdefault("CH_IMAGE_STORAGE", str(Path.home() / ".cache" / "charliecloud"))
     for tool in ("ch-image", "ch-run"):
         if shutil.which(tool) is None:
             raise WhalebinError(f"{tool} not on PATH; install charliecloud "
@@ -318,9 +319,7 @@ def cmd_run(args: argparse.Namespace) -> None:
     cfg = _require_env(load_manifest(), args.env)
     argv = _ch_run_argv(cfg["image"], args.bin,
                         cfg.get("mounts", DEFAULT_MOUNTS), args.args)
-    env = os.environ.copy()
-    env.setdefault("CH_IMAGE_STORAGE", str(Path.home() / ".cache" / "charliecloud"))
-    os.execvpe(argv[0], argv, env)
+    os.execvp(argv[0], argv)
 
 
 def main() -> None:
