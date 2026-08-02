@@ -19,6 +19,14 @@ class BackendEnvironmentTest(unittest.TestCase):
             _require_backend()
             self.assertEqual(os.environ["CH_IMAGE_STORAGE"], "/custom")
 
+    @patch("whalebin.main.shutil.which", return_value="/bin/tool")
+    def test_replaces_empty_storage(self, _which) -> None:
+        with patch.dict(os.environ, {"CH_IMAGE_STORAGE": ""}, clear=True), patch.object(
+            Path, "home", return_value=Path("/home/test")
+        ):
+            _require_backend()
+            self.assertEqual(os.environ["CH_IMAGE_STORAGE"], "/home/test/.cache/charliecloud")
+
 
 if __name__ == "__main__":
     unittest.main()
