@@ -47,7 +47,7 @@ uv tool uninstall whalebin
 # outside $HOME (skip on personal Linux/macOS — $HOME/$PWD/$tmp are auto-mounted).
 whalebin install texlive \
     --image texlive/texlive:latest-full \
-    --bin latexmk,pdflatex,xelatex,lualatex,latexindent,chktex,bibtex,biber,makeindex \
+    --bin latexmk,pdflatex,xelatex,lualatex,latexindent,chktex,bibtex,biber,makeindex,latexpand \
     --mount /mnt:/mnt
 
 # Now host PATH has them; they transparently invoke ch-run
