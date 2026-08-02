@@ -318,7 +318,9 @@ def cmd_run(args: argparse.Namespace) -> None:
     cfg = _require_env(load_manifest(), args.env)
     argv = _ch_run_argv(cfg["image"], args.bin,
                         cfg.get("mounts", DEFAULT_MOUNTS), args.args)
-    os.execvp(argv[0], argv)
+    env = os.environ.copy()
+    env.setdefault("CH_IMAGE_STORAGE", str(Path.home() / ".cache" / "charliecloud"))
+    os.execvpe(argv[0], argv, env)
 
 
 def main() -> None:
