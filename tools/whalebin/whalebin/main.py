@@ -120,7 +120,8 @@ def _print_env_text(name: str, cfg: dict) -> None:
 
 
 def _require_backend() -> None:
-    os.environ.setdefault("CH_IMAGE_STORAGE", str(Path.home() / ".cache" / "charliecloud"))
+    if not os.environ.get("CH_IMAGE_STORAGE"):
+        os.environ["CH_IMAGE_STORAGE"] = str(Path.home() / ".cache" / "charliecloud")
     for tool in ("ch-image", "ch-run"):
         if shutil.which(tool) is None:
             raise WhalebinError(f"{tool} not on PATH; install charliecloud "
