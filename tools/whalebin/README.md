@@ -6,16 +6,11 @@ Given a docker image with one or more useful binaries inside (e.g. `texlive/texl
 
 ## Install
 
-Prerequisite: `charliecloud` on PATH. Build from upstream's GitLab release tarball; the conda-forge feedstock is stale (see [conda-forge/charliecloud-feedstock#24](https://github.com/conda-forge/charliecloud-feedstock/pull/24)):
+Prerequisite: `charliecloud` on PATH (0.44+, current on conda-forge since [conda-forge/charliecloud-feedstock#24](https://github.com/conda-forge/charliecloud-feedstock/pull/24)):
 
 ```sh
-wget https://gitlab.com/charliecloud/charliecloud/-/package_files/290882913/download -O charliecloud-0.44.tar.gz
-tar xf charliecloud-0.44.tar.gz && cd charliecloud-0.44
-./configure --prefix=$HOME/.local --enable-buggy-build --disable-html --disable-man
-make -j$(nproc) && make install
+pixi global install charliecloud
 ```
-
-Once #24 merges, swap for `pixi global install charliecloud`.
 
 Then whalebin itself.
 
@@ -99,7 +94,7 @@ exec ch-run \
 ## Why Charliecloud (not docker, not singularity, not whalebrew)?
 
 - **Docker**: requires daemon + explicit `-v` mounts for every path, hardcoded `--user` UID, doesn't fit "portable container-as-CLI" semantics.
-- **Singularity**: works (similar `$HOME` auto-mount + host-user model), but 10-20× heavier (~50-100MB vs charliecloud's single-tarball source build to `~/.local/`), and typically requires a system-wide install.
+- **Singularity**: works (similar `$HOME` auto-mount + host-user model), but heavier and typically requires a system-wide (root) install, whereas charliecloud installs user-space via `pixi global install charliecloud`.
 - **[whalebrew](https://github.com/whalebrew/whalebrew)**: targets single-binary, whalebrew-aware images and mounts only `$PWD` as `/workdir`. Multi-binary images like `texlive/texlive`, absolute path references, and cluster NFS mounts don't fit cleanly.
 
 Charliecloud's defaults (rootless via user namespaces, host fs largely visible, single static binary distribution) match the "isolated env + exposed binary surface" pattern that pixi global / uv tool already use, just with a docker image as the env.
