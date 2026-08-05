@@ -6,7 +6,7 @@ Given a docker image with one or more useful binaries inside (e.g. `texlive/texl
 
 ## Install
 
-Prerequisite: `charliecloud` on PATH (0.44+, current on conda-forge since [conda-forge/charliecloud-feedstock#24](https://github.com/conda-forge/charliecloud-feedstock/pull/24)):
+Prerequisite: `charliecloud` on PATH:
 
 ```sh
 pixi global install charliecloud
