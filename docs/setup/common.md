@@ -4,26 +4,27 @@ Setup playbook for new machines. Linux and macOS focused.
 
 ## Installation tiers
 
-Each installable item below is tagged with one of (cumulative: `full` is a superset of `minimal`):
+Each installable item has one tier. `full` includes everything in `minimal`.
 
 - **minimal**: the smallest set needed to be productive on this machine
 - **full**: `minimal` plus all standard extras; the default for a new dev machine
 - **as-needed**: outside both presets; install only when a specific project or task calls for it
 
-Tags appear inline next to each item, or on a section heading (e.g., `## Shell *(minimal)*`) when the entire section sits at one tier.
+Tags appear on each item or on a section heading when the whole section has one tier.
 
-**For agents reading this doc**: First, use `AskUserQuestion` to ask the user which baseline preset to install: `minimal` or `full`. Then install everything tagged at or below the chosen preset without further prompting. For each `as-needed` item, use a separate `AskUserQuestion` to confirm whether to install it on this particular machine. Never install `as-needed` items silently.
+> [!IMPORTANT]
+> Agents must first ask whether to install the `minimal` or `full` baseline. Install that baseline without further prompts. Ask separately before installing each `as-needed` item; never install one silently.
 
 ## Shell *(minimal)*
 
-Install [zsh](https://github.com/zsh-users/zsh) with [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh). Set the theme to `random`. Enable these plugins:
+Install [zsh](https://github.com/zsh-users/zsh) with [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh). Set the theme to `random` and enable these plugins:
 
 - **[git](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git)**: well-known aliases (`gst`, `gco`, `gl`, etc.).
 - **[zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)**: catches typos before hitting enter.
 - **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)**: fish-like history suggestions.
-- **[progress-utils](https://github.com/MilkClouds/my-dev-playbook/tree/main/progress-utils)**: custom plugin (included in this repo) that wraps cp/mv/rm/tar/wget with progress bars via tqdm and rsync.
+- **[progress-utils](https://github.com/MilkClouds/my-dev-playbook/tree/main/progress-utils)**: adds progress bars to `cp`, `mv`, `rm`, `tar`, and `wget` through tqdm and rsync.
 
-Run this one-liner to install oh-my-zsh, the additional plugins, and configure the theme. (`sed -i.bak` form works on both GNU and BSD `sed`, so the same command runs on Linux and macOS.)
+The following installs oh-my-zsh and its plugins, then configures the theme. The `sed -i.bak` form works on both GNU and BSD `sed`.
 
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
@@ -41,24 +42,63 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 ## Tool Management
 
-Install once, use system-wide. **On shared clusters, never touch system packages (`sudo apt`/`yum`/`brew`); always prefer user-space installers (`pixi global`, `uv tool`) so you don't disturb other users.**
+Install these once for system-wide use. On shared clusters, use user-space installers such as `pixi global` and `uv tool`; never modify system packages with `sudo`, `apt`, `yum`, or `brew`.
 
-- **Installers** (meta layer: tools whose job is to install other tools):
-  - **[uv](https://github.com/astral-sh/uv) (`uv tool install`)** *(minimal)*: For pypi-distributed CLIs. Installs each tool in its own isolated env. Same `uv` binary covered in [Package Management](#package-management) below. This is its global-tool side.
-  - **[pnpm](https://github.com/pnpm/pnpm) (`pnpm add -g`)** *(minimal)*: For Node-distributed CLIs. Install with `npm install -g pnpm` (nvm/npm is already present for the `node` runtime and `npx`, so pnpm needs no separate installer), then run `pnpm setup` once to put `PNPM_HOME/bin` on `PATH`. Preferred over `npm install -g` for the CLIs it manages: pnpm links them from a shared store instead of overwriting binaries in place, so updates never hit `EBUSY` when a long-running process holds the old binary (common on NFS homes). Reinstall after switching Node versions (npm globals are per-version); avoid pnpm's `curl | sh` installer, which mis-registers pnpm and can brick `pnpm update -g` ([pnpm#11473](https://github.com/pnpm/pnpm/issues/11473)).
-  - **[pixi](https://github.com/prefix-dev/pixi) (`pixi global install`)** *(minimal)*: Conda-forge backed cross-language installer. Default choice for non-pypi global CLIs (e.g., `pixi global install gh` for the GitHub CLI).
-  - **[cargo](https://github.com/rust-lang/cargo) (`cargo install`)** *(full)*: Rust's package installer. Install when you need a Rust-distributed CLI; requires the Rust toolchain ([`rustup`](https://github.com/rust-lang/rustup)). Pair with [`cargo-update`](https://github.com/nabijaczleweli/cargo-update) for `cargo install-update -a` to bulk-upgrade everything cargo installed.
-  - **[whalebin](https://github.com/MilkClouds/my-dev-playbook/tree/main/tools/whalebin) (`whalebin install`)** *(as-needed)*: For binaries that live inside a docker image rather than as a native package. Generates wrapper scripts in `~/.local/bin/` that invoke `ch-run` (Charliecloud) so containerized binaries behave like host-installed CLIs: daemonless, rootless, with `$HOME`/`$PWD`/`/tmp` auto-mounted. Requires [`charliecloud`](https://charliecloud.io/latest/index.html) on PATH (see System CLIs > as-needed). Install with `uv tool install --from "git+https://github.com/MilkClouds/my-dev-playbook.git#subdirectory=tools/whalebin" whalebin` (or local: `uv tool install --from ~/GitHub/my-dev-playbook/tools/whalebin whalebin`).
-- **System CLIs** (non-pypi, install via `pixi global install <name>`):
-  - **minimal**: [`git`](https://git-scm.com/) (usually pre-installed; install via pixi if the OS-bundled version is too old; configure user/email/default branch `main` after install; **note:** pixi's git package omits `git-subtree` (a contrib script); if a project needs it and the system git has it, symlink: `ln -s /usr/lib/git-core/git-subtree ~/.local/bin/git-subtree`), [`gh`](https://cli.github.com/) (run `gh auth login` once after install).
-  - **full**: [`tmux`](https://github.com/tmux/tmux) (terminal multiplexer for SSH workflows; doubles as multi-agent workspace), [`ncdu`](https://dev.yorhel.nl/ncdu) (interactive disk usage analyzer), [`git-lfs`](https://github.com/git-lfs/git-lfs) (Git Large File Storage; Ubuntu apt's 3.0.2 is stale and has smudge bugs; run `git lfs install` once after pixi install to register git filters), [`jq`](https://github.com/jqlang/jq) (JSON processor), [`go-yq`](https://github.com/mikefarah/yq) (YAML/XML/TOML processor; conda-forge package name is `go-yq`, binary is `yq`).
-  - **as-needed**: [`cmake`](https://cmake.org/) (C/C++ build system), [`hyperfine`](https://github.com/sharkdp/hyperfine) (CLI benchmarking), [`ffmpeg`](https://ffmpeg.org/) (audio/video processing), [`typst`](https://typst.app/) (modern typesetting system, LaTeX alternative), [`git-subrepo`](https://github.com/ingydotnet/git-subrepo) (vendored subtree workflow for external repos; because it's a git subcommand, run `pixi global expose add --environment git-subrepo git-subrepo` after install), [`charliecloud`](https://charliecloud.io/latest/index.html) (rootless HPC container runtime; backend for `whalebin`).
-- **Python CLIs** (pypi-distributed, install via `uv tool install <name>`):
-  - **minimal**: [`ruff`](https://github.com/astral-sh/ruff) (linter + formatter, wired into `settings.json`), [`ty`](https://github.com/astral-sh/ty) (Astral's Python type checker), [`tqdm`](https://github.com/tqdm/tqdm) (required by the `progress-utils` zsh plugin).
-  - **full**: [`glances`](https://github.com/nicolargo/glances) (CPU/RAM/disk/network/GPU monitor), [`gpustat`](https://github.com/wookayin/gpustat) (fast `nvidia-smi` replacement).
-  - **as-needed**: [`paperstack`](https://github.com/MilkClouds/paperstack) (`uv tool install paperstack-cli`) (research corpus and source-backed paper CLI), [`git-filter-repo`](https://github.com/newren/git-filter-repo) (git history rewriter), [`gsutil`](https://cloud.google.com/storage/docs/gsutil) (Google Cloud Storage CLI), [`grip`](https://github.com/joeyespo/grip) (local GitHub-flavored Markdown previewer).
-- **Containerized CLIs** (binaries that ship as docker images, install via `whalebin install <name> --image <img> --bin <a,b,c>`):
-  - **as-needed**: [`texlive/texlive:latest-full`](https://hub.docker.com/r/texlive/texlive). Full LaTeX toolchain (`latexmk`, `pdflatex`, `xelatex`, `lualatex`, `latexindent`, `chktex`, `bibtex`, `biber`, `makeindex`, `latexpand`); avoids the 5+ GB native TeX Live install and `tlmgr` upkeep. On HPC clusters where repos live in sibling NFS trees outside `$HOME`, pass the parent mount once at install: `whalebin install texlive --image texlive/texlive:latest-full --bin latexmk,pdflatex,xelatex,lualatex,latexindent,chktex,bibtex,biber,makeindex,latexpand --mount /mnt:/mnt`.
+### Installers
+
+- **[uv](https://github.com/astral-sh/uv)** *(minimal)*: Installs each Python CLI in an isolated environment with `uv tool install`.
+- **[pnpm](https://github.com/pnpm/pnpm)** *(minimal)*: Installs Node CLIs from a shared store. Install it with `npm install -g pnpm`, then run `pnpm setup` once to add `PNPM_HOME/bin` to `PATH`. Its shared-store links avoid in-place binary replacement failures on NFS homes.
+  - Reinstall pnpm after switching Node versions because npm globals are version-specific.
+  - Avoid pnpm's `curl | sh` installer; it can break global updates ([pnpm#11473](https://github.com/pnpm/pnpm/issues/11473)).
+- **[pixi](https://github.com/prefix-dev/pixi)** *(minimal)*: Default installer for non-PyPI CLIs. Use `pixi global install`, for example `pixi global install gh`.
+- **[cargo](https://github.com/rust-lang/cargo)** *(full)*: Installs Rust CLIs and requires [`rustup`](https://github.com/rust-lang/rustup). Add [`cargo-update`](https://github.com/nabijaczleweli/cargo-update) to upgrade installed tools with `cargo install-update -a`.
+- **[whalebin](https://github.com/MilkClouds/my-dev-playbook/tree/main/tools/whalebin)** *(as-needed)*: Creates rootless `ch-run` wrappers in `~/.local/bin/` for tools distributed as container images. It automatically mounts `$HOME`, `$PWD`, and `/tmp`, and requires Charliecloud. Install from GitHub:
+
+  ```bash
+  uv tool install --from "git+https://github.com/MilkClouds/my-dev-playbook.git#subdirectory=tools/whalebin" whalebin
+  ```
+
+### System CLIs
+
+Use an existing system binary when it is sufficiently current; otherwise install with `pixi global install <name>`.
+
+- **[git](https://git-scm.com/)** *(minimal)*: Keep the system Git unless it is too old. Configure user, email, and the default `main` branch. Pixi omits `git-subtree`; link the system copy when needed: `ln -s /usr/lib/git-core/git-subtree ~/.local/bin/git-subtree`.
+- **[gh](https://cli.github.com/)** *(minimal)*: Run `gh auth login` after installation.
+- **[tmux](https://github.com/tmux/tmux)** *(full)*: Terminal multiplexer and multi-agent workspace.
+- **[ncdu](https://dev.yorhel.nl/ncdu)** *(full)*: Interactive disk usage analyzer.
+- **[git-lfs](https://github.com/git-lfs/git-lfs)** *(full)*: Run `git lfs install` after installation. Avoid Ubuntu's stale 3.0.2 package, which has smudge bugs.
+- **[jq](https://github.com/jqlang/jq)** *(full)*: JSON processor.
+- **[go-yq](https://github.com/mikefarah/yq)** *(full)*: YAML, XML, and TOML processor; the binary is `yq`.
+- **[cmake](https://cmake.org/)** *(as-needed)*: C and C++ build system.
+- **[hyperfine](https://github.com/sharkdp/hyperfine)** *(as-needed)*: CLI benchmark runner.
+- **[ffmpeg](https://ffmpeg.org/)** *(as-needed)*: Audio and video processing.
+- **[typst](https://typst.app/)** *(as-needed)*: Modern typesetting system.
+- **[git-subrepo](https://github.com/ingydotnet/git-subrepo)** *(as-needed)*: Expose its Git subcommand after install: `pixi global expose add --environment git-subrepo git-subrepo`.
+- **[charliecloud](https://charliecloud.io/latest/index.html)** *(as-needed)*: Rootless HPC container runtime required by whalebin.
+
+### Python CLIs
+
+Install these with `uv tool install <name>`.
+
+- **[ruff](https://github.com/astral-sh/ruff)** *(minimal)*: Python linter and formatter.
+- **[ty](https://github.com/astral-sh/ty)** *(minimal)*: Python type checker.
+- **[tqdm](https://github.com/tqdm/tqdm)** *(minimal)*: Required by the `progress-utils` zsh plugin.
+- **[glances](https://github.com/nicolargo/glances)** *(full)*: System monitor.
+- **[gpustat](https://github.com/wookayin/gpustat)** *(full)*: Fast `nvidia-smi` replacement.
+- **[paperstack](https://github.com/MilkClouds/paperstack)** *(as-needed)*: Research corpus and source-backed paper CLI. Install with `uv tool install paperstack-cli`.
+- **[git-filter-repo](https://github.com/newren/git-filter-repo)** *(as-needed)*: Git history rewriter.
+- **[gsutil](https://cloud.google.com/storage/docs/gsutil)** *(as-needed)*: Google Cloud Storage CLI.
+- **[grip](https://github.com/joeyespo/grip)** *(as-needed)*: Local GitHub-flavored Markdown previewer.
+
+### Containerized CLIs
+
+- **[TeX Live](https://hub.docker.com/r/texlive/texlive)** *(as-needed)*: Install the full toolchain through whalebin. On HPC clusters, mount the shared filesystem containing the repositories:
+
+  ```bash
+  whalebin install texlive --image texlive/texlive:latest-full \
+    --bin latexmk,pdflatex,xelatex,lualatex,latexindent,chktex,bibtex,biber,makeindex,latexpand \
+    --mount /mnt:/mnt
+  ```
 
 ### Keeping tools fresh
 
@@ -69,38 +109,44 @@ uv self update && uv tool upgrade --all \
   && cargo install-update -a
 ```
 
-`--latest` crosses semver ranges: without it, plain `pnpm update` never bumps a `^0.x` CLI past its minor (`0.142`→`0.143`); the default 24h [`minimumReleaseAge`](https://pnpm.io/settings#minimumreleaseage) cooldown still applies. `--ignore-scripts` keeps `pnpm update -g` non-interactive and respects pnpm's build-script gate (blocked by default for supply-chain safety); if a global CLI needs its postinstall (e.g. a fetched binary), approve just that one with `pnpm add -g --allow-build=<pkg> <pkg>`.
+`--latest` allows pnpm to cross semver ranges, including `^0.x` minor versions. The 24-hour [`minimumReleaseAge`](https://pnpm.io/settings#minimumreleaseage) cooldown still applies. `--ignore-scripts` keeps updates non-interactive and preserves pnpm's supply-chain build-script gate; approve a required postinstall explicitly with `pnpm add -g --allow-build=<pkg> <pkg>`.
 
 ## Package Management
 
-- **Python** *(minimal)*: Install [uv](https://github.com/astral-sh/uv). Use `uv venv`/`uv pip`/`uv run` for projects. (For its global-CLI side `uv tool install`, see [Tool Management](#tool-management) above.)
-- **Node.js** *(minimal)*: Install [nvm](https://github.com/nvm-sh/nvm): owns Node.js and npm. Use [pnpm](#tool-management) for global CLIs; sequential-thinking remains an unpinned `npx` command.
+- **Python** *(minimal)*: Install [uv](https://github.com/astral-sh/uv). Use `uv venv`, `uv pip`, and `uv run` for projects; use `uv tool install` for global Python CLIs.
+- **Node.js** *(minimal)*: Install [nvm](https://github.com/nvm-sh/nvm) for Node.js and npm. Use pnpm for global CLIs; sequential-thinking remains an unpinned `npx` command.
 - **JVM** *(as-needed)*: Install [sdkman](https://sdkman.io/).
-- **Conda** *(as-needed)*: Install [Miniforge](https://github.com/conda-forge/miniforge) when a project depends on the conda ecosystem (most common in Python, but conda-forge serves many languages: R, C/C++, Julia, etc.).
+- **Conda** *(as-needed)*: Install [Miniforge](https://github.com/conda-forge/miniforge) when a project depends on Conda packages.
 
 ## Editor *(minimal)*
 
-Use [VS Code](https://github.com/microsoft/vscode). Apply settings and keybindings from: [settings.json](../../configs/settings.json), [keybindings.json](../../configs/keybindings.json).
+Use [VS Code](https://github.com/microsoft/vscode). Apply [settings.json](../../configs/settings.json) and [keybindings.json](../../configs/keybindings.json).
 
 ## Agentic Coding Tools
 
-Layered stack: a base agentic CLI per provider, an orchestration layer on top, and shared utilities.
+Agent CLIs, their configuration, and shared utilities.
 
-- <a id="claude-code-stack"></a>**Claude Code stack** (primary):
-  - **[Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)** *(minimal)*: Anthropic's first-party agentic coding CLI.
-  - **[claude-pace](https://github.com/Astro-Han/claude-pace)** *(minimal)*: Single-file bash statusline showing 5h/7d quota usage with pace delta, context bar, and git diff stats.
-  - **Configs** *(minimal)*: apply after Claude Code is installed; all four configure Claude Code itself:
-    - [`claude-plugins.json`](../../configs/claude-plugins.json). Plugin marketplace enablement. Turns on [`claude-pace`](https://github.com/Astro-Han/claude-pace), [`skill-creator`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), [`fetch-bib`](https://github.com/MilkClouds/fetch-bib), and the [`codex` plugin](https://github.com/openai/codex-plugin-cc) (lets you call Codex from within Claude Code as a subagent for second opinions; only takes effect when the [Codex stack](#codex-stack) below is also installed).
-    - [`mcp-servers.json`](../../configs/mcp-servers.json). Claude Code MCP servers. Node packages are unpinned. Replace credential placeholders before merging.
-    - [`claude-settings.json`](../../configs/claude-settings.json). Claude Code settings. Merge into `~/.claude/settings.json`.
-    - [`CLAUDE.md`](../../configs/CLAUDE.md). User-level Claude Code memory file. Global instructions, language preference, environment constraints.
-  - **Commands** *(as-needed)*: slash commands. Install by copying into `~/.claude/commands/`:
-    - [`/sf`](../../.claude/commands/sf.md). Pre-2.1.147 `/simplify` (3 parallel review agents + direct fix). Built-in `/simplify` now only reports. Background: [`docs/recipes/claude-code/simplify-history/`](../../docs/recipes/claude-code/simplify-history/).
-- <a id="codex-stack"></a>**Codex stack** (secondary):
-  - **[Codex](https://github.com/openai/codex)** *(as-needed)*: OpenAI's first-party agentic coding CLI; secondary tool for second-opinion runs. Install with the official standalone installer (`curl -fsSL https://chatgpt.com/codex/install.sh | sh`; on Windows, `powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"`), not `pnpm add -g`: Codex's self-updater recognizes only npm and Homebrew installs, so a pnpm-managed copy silently reinstalls itself into the npm global prefix and then gets shadowed on `PATH` ([openai/codex#24035](https://github.com/openai/codex/issues/24035)). Standalone installs update in place with `codex update`.
-  - **[oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) (`omx`)** *(as-needed)*: Multi-agent orchestration layer on top of Codex. Requires Codex.
-  - **Configs** *(as-needed)*: apply after Codex is installed:
-    - [`codex-config.toml`](../../configs/codex-config.toml). User-level Codex config, including MCP servers. Replace credentials and merge machine-local trust entries.
-    - [`AGENTS.md`](../../configs/AGENTS.md). User-level Codex instructions for `~/.codex/AGENTS.md`: cluster constraints, Korean response preference, and comment brevity.
-- **Cross-cutting**:
-  - **[agf](https://github.com/subinium/agf)** *(full)*: AI Agent Session Finder. Locates and manages running agent sessions across both CLIs.
+### <a id="claude-code-stack"></a>Claude Code stack
+
+- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)** *(minimal)*: Anthropic's first-party agentic coding CLI.
+- **[claude-pace](https://github.com/Astro-Han/claude-pace)** *(minimal)*: Status line for quota pace, context use, and Git changes.
+- **Configs** *(minimal)*: Apply after installing Claude Code.
+  - [`claude-plugins.json`](../../configs/claude-plugins.json): enables [claude-pace](https://github.com/Astro-Han/claude-pace), [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), [fetch-bib](https://github.com/MilkClouds/fetch-bib), and the [Codex plugin](https://github.com/openai/codex-plugin-cc). The Codex plugin requires the Codex stack below.
+  - [`mcp-servers.json`](../../configs/mcp-servers.json): unpinned Node MCP servers. Replace credential placeholders before use.
+  - [`claude-settings.json`](../../configs/claude-settings.json): merge into `~/.claude/settings.json`.
+  - [`CLAUDE.md`](../../configs/CLAUDE.md): global instructions and environment constraints.
+
+### <a id="codex-stack"></a>Codex stack
+
+- **[Codex](https://github.com/openai/codex)** *(as-needed)*: OpenAI's CLI for second-opinion runs. Use the standalone installer instead of pnpm; update it with `codex update`.
+  - Linux/macOS: `curl -fsSL https://chatgpt.com/codex/install.sh | sh`
+  - Windows: `powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"`
+  - A pnpm-managed copy can be shadowed when the self-updater reinstalls Codex under npm ([openai/codex#24035](https://github.com/openai/codex/issues/24035)).
+- **Configs** *(as-needed)*: Apply after installing Codex.
+  - [`codex-config.toml`](../../configs/codex-config.toml): user config and MCP servers. Preserve machine-local trust entries when applying it.
+  - [`AGENTS.md`](../../configs/AGENTS.md): global instructions and environment constraints.
+
+### Shared agent tools
+
+- **[Paperstack skill](https://github.com/MilkClouds/paperstack/tree/main/skills/paperstack)** *(as-needed)*: After installing the CLI, run `npx skills add MilkClouds/paperstack --skill paperstack -g -a claude-code -a codex -y`.
+- **[agf](https://github.com/subinium/agf)** *(full)*: Finds and manages sessions across both CLIs.
