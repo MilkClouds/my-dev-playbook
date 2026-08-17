@@ -21,11 +21,6 @@ status_line_use_colors = true
 # Replace credential placeholders before merging this file into ~/.codex/config.toml.
 # Node packages are unpinned; startup timeout is 30s for every server.
 
-[mcp_servers.arxiv-mcp-server]
-command = "uv"
-args = ["tool", "run", "--with", "git+https://github.com/blazickjp/arxiv-mcp-server.git", "arxiv-mcp-server", "--storage-path", "/tmp/arxiv-mcp-server"]
-startup_timeout_sec = 30.0
-
 [mcp_servers.context7]
 command = "pnpm"
 args = ["dlx", "@upstash/context7-mcp"]
@@ -69,14 +64,6 @@ disabled_tools = ["perplexity_research", "perplexity_reason"]
 
 [mcp_servers.perplexity.env]
 PERPLEXITY_API_KEY = "<key>"
-
-[mcp_servers.semantic-scholar-mcp]
-command = "uv"
-args = ["tool", "run", "--with", "git+https://github.com/MilkClouds/semantic-scholar-mcp", "semantic-scholar-mcp", "serve"]
-startup_timeout_sec = 30.0
-
-[mcp_servers.semantic-scholar-mcp.env]
-SEMANTIC_SCHOLAR_API_KEY = "<key>"
 
 [mcp_servers.sequential-thinking]
 command = "npx"
