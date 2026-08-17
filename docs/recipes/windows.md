@@ -23,7 +23,7 @@ Decision signals:
 
 Tiebreaker: pixi > choco > official (for CLIs); official > choco > pixi (for drivers and vendor ecosystems).
 
-**For agents reading this doc**: install everything tagged at or below the preset chosen in common.md without further prompting. For each *as-needed* item, use a separate `AskUserQuestion` to confirm against the machine's intended use.
+**For agents reading this doc**: install everything tagged at or below the preset chosen in common.md without further prompting. Ask separately before installing each *as-needed* item based on the machine's intended use.
 
 ## (1) Official installer
 

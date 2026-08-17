@@ -30,7 +30,7 @@ Optional, scenario-specific setups. Apply only when you need them.
 - **[docs/recipes/mobile-tmux/](docs/recipes/mobile-tmux/)**: Authenticated mobile browser access to tmux via `ttyd` + cookie auth proxy.
 - **[docs/recipes/windows.md](docs/recipes/windows.md)**: Windows 11 package install method decisions (installer / pixi / choco). *Experimental.*
 - **[docs/recipes/discord-task-notifications/](docs/recipes/discord-task-notifications/)**: Stop / Notification / UserPromptSubmit hooks that post Discord embeds when Claude Code finishes a long task. Debounced to silence when you're at the terminal; per-turn token + USD cost via ccusage pricing catalog.
-- **[docs/recipes/codex-discord-task-notifications/](docs/recipes/codex-discord-task-notifications/)**: Self-contained Codex `notify` handler for debounced Discord turn-completion alerts. Node built-ins only; no Claude plugin, ccusage-worv, or Oh My Codex dependency.
+- **[docs/recipes/codex-discord-task-notifications/](docs/recipes/codex-discord-task-notifications/)**: Self-contained Codex `notify` handler for debounced Discord turn-completion alerts. Uses Node built-ins only.
 - **[docs/recipes/pretty-git-diffs/](docs/recipes/pretty-git-diffs/)**: Syntax-highlighted git diffs via delta + lazygit, across the CLI, the lazygit TUI, and inside Claude Code's `!` bash (with the non-TTY color workaround).
 - **[docs/recipes/claude-code/](docs/recipes/claude-code/)**: Claude Code workflow notes: MCP update flow and the `/simplify` history reconstruction.
 
@@ -47,9 +47,7 @@ This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.j
 
 ### Installing skills
 
-Install via the `claude plugin` CLI. Both `marketplace add` and `install`
-default to **user** scope; keep the marketplace and the plugin on the **same**
-scope. Pick one:
+Install via the `claude plugin` CLI. Both `marketplace add` and `install` default to **user** scope; keep the marketplace and the plugin on the **same** scope. Pick one:
 
 ```bash
 # Project scope — wire a skill into one repo (committed to its .claude/settings.json, travels with the repo)
@@ -61,9 +59,7 @@ claude plugin marketplace add MilkClouds/my-dev-playbook
 claude plugin install editable-pptx@my-dev-playbook
 ```
 
-Swap `editable-pptx` for any skill above. To remove, use
-`claude plugin marketplace remove my-dev-playbook`; this also updates the
-global `known_marketplaces.json` registry, which hand-deleting the cache dir does not.
+Swap `editable-pptx` for any skill above. To remove, use `claude plugin marketplace remove my-dev-playbook`; this also updates the global `known_marketplaces.json` registry, which hand-deleting the cache dir does not.
 
 ## Commands
 

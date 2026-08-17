@@ -207,6 +207,6 @@ If the statusline appears blank on Windows after restart, edit `~/.claude/settin
 
 ## Notes
 
-- `~/.codex/prompts/sisyphus-lite.md`, if present, may have been installed by OMC. Confirm with the user before removing; it might be in use by an unrelated tool (e.g. `omx`).
+- `~/.codex/prompts/sisyphus-lite.md`, if present, may have been installed by OMC. Confirm with the user before removing; it might be in use by an unrelated tool.
 - The `find $HOME -maxdepth 7` depth may miss deeply nested workspaces. Increase it if the survey output looks incomplete.
 - pixi global install can fail with `No candidates were found for jq *` even when conda-forge is the configured channel; the static binary fallback is the most reliable route.
