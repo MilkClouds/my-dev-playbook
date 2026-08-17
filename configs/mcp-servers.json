@@ -4,19 +4,10 @@
       "command": "pnpm",
       "args": ["dlx", "@upstash/context7-mcp"]
     },
-    "arxiv-mcp-server": {
-      "command": "uv",
-      "args": ["tool", "run", "--with", "git+https://github.com/blazickjp/arxiv-mcp-server.git", "arxiv-mcp-server", "--storage-path", "/tmp/arxiv-mcp-server"]
-    },
     "perplexity": {
       "command": "pnpm",
       "args": ["dlx", "@perplexity-ai/mcp-server"],
       "env": { "PERPLEXITY_API_KEY": "<key>" }
-    },
-    "semantic-scholar-mcp": {
-      "command": "uv",
-      "args": ["tool", "run", "--with", "git+https://github.com/MilkClouds/semantic-scholar-mcp", "semantic-scholar-mcp", "serve"],
-      "env": { "SEMANTIC_SCHOLAR_API_KEY": "<key>" }
     },
     "pdf-reader": {
       "command": "pnpm",
