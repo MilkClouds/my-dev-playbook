@@ -70,8 +70,6 @@ Install these once for system-wide use. On shared clusters, use user-space insta
   uv tool install --from "git+https://github.com/MilkClouds/my-dev-playbook.git#subdirectory=tools/whalebin" whalebin
   ```
 
-  For local development, use `uv tool install --from ~/GitHub/my-dev-playbook/tools/whalebin whalebin`.
-
 ### System CLIs
 
 Use an existing system binary when it is sufficiently current; otherwise install with `pixi global install <name>`.
@@ -165,8 +163,6 @@ Agent CLIs, their configuration, and shared utilities.
   - [`mcp-servers.json`](../../configs/mcp-servers.json): MCP servers. Replace credential placeholders before use.
   - [`claude-settings.json`](../../configs/claude-settings.json): merge into `~/.claude/settings.json`.
   - [`CLAUDE.md`](../../configs/CLAUDE.md): global instructions and environment constraints.
-- **[/sf](../../commands/sf.md)** *(as-needed)*: Legacy three-agent simplify-and-fix workflow. Install under
-  `~/.claude/commands/`. See its [history](../recipes/claude-code/simplify-history/).
 
 ### <a id="codex-stack"></a>Codex stack
 
