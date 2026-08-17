@@ -1,6 +1,6 @@
 # Codex Discord Task-Completion Notifications
 
-A self-contained Codex `notify` handler that posts a Discord embed when a turn takes at least 30 seconds and no new turn starts during an 8-second debounce. It uses Node.js built-ins only: no npm package, `jq`, `curl`, Claude plugin, ccusage-worv, or Oh My Codex dependency.
+A self-contained Codex `notify` handler that posts a Discord embed when a turn takes at least 30 seconds and no new turn starts during an 8-second debounce. It uses Node.js built-ins only.
 
 Codex currently invokes `notify` for `agent-turn-complete`. The JSON payload is passed as the final command-line argument. This recipe deliberately discards `input-messages`; user prompts are never copied into a job or sent to Discord.
 
