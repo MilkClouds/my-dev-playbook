@@ -187,5 +187,5 @@ Agent CLIs, their configuration, and shared utilities.
 
 - **[Paperstack skill](https://github.com/MilkClouds/paperstack/tree/main/skills/paperstack)** *(as-needed)*: After
   installing the CLI, run
-  `npx skills add MilkClouds/paperstack --skill paperstack -g -a claude-code -a codex`.
+  `npx skills add MilkClouds/paperstack --skill paperstack -g -a claude-code -a codex -y`.
 - **[agf](https://github.com/subinium/agf)** *(full)*: Finds and manages sessions across both CLIs.
