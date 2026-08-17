@@ -54,7 +54,8 @@ Install these once for system-wide use. On shared clusters, use user-space insta
 - **[uv](https://github.com/astral-sh/uv)** *(minimal)*: Installs each Python CLI in an isolated environment with
   `uv tool install`.
 - **[pnpm](https://github.com/pnpm/pnpm)** *(minimal)*: Installs Node CLIs from a shared store. Install it with
-  `npm install -g pnpm`, then run `pnpm setup` once.
+  `npm install -g pnpm`, then run `pnpm setup` once to add `PNPM_HOME/bin` to `PATH`. Its shared-store links avoid
+  in-place binary replacement failures on NFS homes.
   - Reinstall pnpm after switching Node versions because npm globals are version-specific.
   - Avoid pnpm's `curl | sh` installer; it can break global updates ([pnpm#11473](https://github.com/pnpm/pnpm/issues/11473)).
 - **[pixi](https://github.com/prefix-dev/pixi)** *(minimal)*: Default installer for non-PyPI CLIs. Use
@@ -63,8 +64,8 @@ Install these once for system-wide use. On shared clusters, use user-space insta
   [`rustup`](https://github.com/rust-lang/rustup). Add [`cargo-update`](https://github.com/nabijaczleweli/cargo-update)
   to upgrade installed tools with `cargo install-update -a`.
 - **[whalebin](https://github.com/MilkClouds/my-dev-playbook/tree/main/tools/whalebin)** *(as-needed)*: Creates
-  rootless `ch-run` wrappers in `~/.local/bin/` for tools distributed as container images. Requires Charliecloud.
-  Install from GitHub:
+  rootless `ch-run` wrappers in `~/.local/bin/` for tools distributed as container images. It automatically mounts
+  `$HOME`, `$PWD`, and `/tmp`, and requires Charliecloud. Install from GitHub:
 
   ```bash
   uv tool install --from "git+https://github.com/MilkClouds/my-dev-playbook.git#subdirectory=tools/whalebin" whalebin
@@ -81,7 +82,7 @@ Use an existing system binary when it is sufficiently current; otherwise install
 - **[tmux](https://github.com/tmux/tmux)** *(full)*: Terminal multiplexer and multi-agent workspace.
 - **[ncdu](https://dev.yorhel.nl/ncdu)** *(full)*: Interactive disk usage analyzer.
 - **[git-lfs](https://github.com/git-lfs/git-lfs)** *(full)*: Run `git lfs install` after installation. Avoid Ubuntu's
-  stale 3.0.2 package.
+  stale 3.0.2 package, which has smudge bugs.
 - **[jq](https://github.com/jqlang/jq)** *(full)*: JSON processor.
 - **[go-yq](https://github.com/mikefarah/yq)** *(full)*: YAML, XML, and TOML processor; the binary is `yq`.
 - **[cmake](https://cmake.org/)** *(as-needed)*: C and C++ build system.
@@ -128,9 +129,10 @@ uv self update && uv tool upgrade --all \
   && cargo install-update -a
 ```
 
-`--latest` allows pnpm to cross semver ranges. The 24-hour
+`--latest` allows pnpm to cross semver ranges, including `^0.x` minor versions. The 24-hour
 [`minimumReleaseAge`](https://pnpm.io/settings#minimumreleaseage) cooldown still applies. `--ignore-scripts` keeps
-updates non-interactive; approve a required postinstall explicitly with `pnpm add -g --allow-build=<pkg> <pkg>`.
+updates non-interactive and preserves pnpm's supply-chain build-script gate; approve a required postinstall explicitly
+with `pnpm add -g --allow-build=<pkg> <pkg>`.
 
 ## Package Management
 
@@ -157,10 +159,14 @@ Agent CLIs, their configuration, and shared utilities.
   agentic coding CLI.
 - **[claude-pace](https://github.com/Astro-Han/claude-pace)** *(minimal)*: Status line for quota pace, context use,
   and Git changes.
-- **Configs** *(minimal)*:
-  - [`claude-plugins.json`](../../configs/claude-plugins.json): enables claude-pace, skill-creator, fetch-bib, and the
-    Codex plugin.
-  - [`mcp-servers.json`](../../configs/mcp-servers.json): MCP servers. Replace credential placeholders before use.
+- **Configs** *(minimal)*: Apply after installing Claude Code.
+  - [`claude-plugins.json`](../../configs/claude-plugins.json): enables
+    [claude-pace](https://github.com/Astro-Han/claude-pace),
+    [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator),
+    [fetch-bib](https://github.com/MilkClouds/fetch-bib), and the
+    [Codex plugin](https://github.com/openai/codex-plugin-cc). The Codex plugin requires the Codex stack below.
+  - [`mcp-servers.json`](../../configs/mcp-servers.json): unpinned Node MCP servers. Replace credential placeholders
+    before use.
   - [`claude-settings.json`](../../configs/claude-settings.json): merge into `~/.claude/settings.json`.
   - [`CLAUDE.md`](../../configs/CLAUDE.md): global instructions and environment constraints.
 
@@ -172,7 +178,7 @@ Agent CLIs, their configuration, and shared utilities.
   - Windows: `powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"`
   - A pnpm-managed copy can be shadowed when the self-updater reinstalls Codex under npm
     ([openai/codex#24035](https://github.com/openai/codex/issues/24035)).
-- **Configs** *(as-needed)*:
+- **Configs** *(as-needed)*: Apply after installing Codex.
   - [`codex-config.toml`](../../configs/codex-config.toml): user config and MCP servers. Preserve machine-local trust
     entries when applying it.
   - [`AGENTS.md`](../../configs/AGENTS.md): global instructions and environment constraints.
