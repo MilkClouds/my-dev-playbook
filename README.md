@@ -43,6 +43,7 @@ Optional, scenario-specific setups. Apply only when you need them.
 This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill in [`skills/`](skills/) ships as its own plugin.
 
 - **sync-repos**: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
+- **concise-writing**: Write and revise non-trivial documents for concise, precise, readable, and logically structured communication, with separate reviewer validation.
 - **editable-pptx**: Build fully editable PowerPoint decks from code: native textboxes/shapes/tables/charts (pptxgenjs) + native PowerPoint equations (LaTeX→OMML via pandoc). Reusable helper library and LibreOffice-based QA scripts.
 
 ### Installing skills
