@@ -1,6 +1,6 @@
 ---
 name: editable-pptx
-description: Build fully editable PowerPoint (.pptx) decks from code: native textboxes, shapes, tables, charts, and real PowerPoint equations (LaTeX→OMML), so the result stays editable in PowerPoint instead of being flat images. Use this whenever the user wants to make, generate, build, or rebuild a slide deck, presentation, or .pptx, including turning notes, a paper, a markdown outline, or an HTML deck into slides, adding editable equations to slides, or producing a deck programmatically, even if they don't say "pptx" explicitly. Prefer it over exporting images or hand-placing text boxes. Triggers on "make/build slides", "presentation", "slide deck", "pptx", "editable slides", "PowerPoint equations", "turn this into slides".
+description: 'Build fully editable PowerPoint (.pptx) decks from code: native textboxes, shapes, tables, charts, and real PowerPoint equations (LaTeX→OMML), so the result stays editable instead of becoming flat images. Use when making or rebuilding a slide deck, presentation, or .pptx from notes, papers, Markdown, HTML, or other source material.'
 ---
 
 # editable-pptx
@@ -9,10 +9,11 @@ Generate decks where **every element is a native, editable PowerPoint object**:
 text is a textbox, boxes/dividers are shapes, tables/charts are native, plus
 **real PowerPoint equations** (not pictures). Reproducible from a build script.
 
-This is an original toolkit (MIT). It does **not** copy or derive from Anthropic's
-source-available `pptx` skill; it reimplements a build-then-QA workflow and adds
-native-equation injection independently, on open tools (pptxgenjs, pandoc,
-LibreOffice).
+This MIT-licensed toolkit implements a build-then-QA workflow with open tools
+(pptxgenjs, pandoc, and LibreOffice), including native-equation injection.
+
+Resolve all bundled paths relative to this skill's directory. When working from
+another directory, use absolute paths to its helpers and library.
 
 ```
 lib/deck.js            reusable pptxgenjs helpers: chrome, secLabel, h2, bullets,
@@ -30,7 +31,7 @@ examples/              runnable example_deck.js + equations.json
 1. **Set up once** (if `node_modules/` or `.tools/` are missing): `bash scripts/setup.sh`.
 2. **Author** the deck in JS using `lib/deck.js` (one slide builder per slide).
 3. **Build**: `node <deck>.js` → `.pptx`.
-4. **Add native equations** (optional): `python scripts/add_equations.py in.pptx out.pptx equations.json`.
+4. **Add native equations** (optional): `.tools/venv/bin/python scripts/add_equations.py in.pptx out.pptx equations.json`.
 5. **QA**: `scripts/render.py` (preview montage) and `scripts/check.py` (overlap/overflow).
 6. **Hand the .pptx to the user to confirm in real PowerPoint**: the QA renderer
    is LibreOffice, which is not pixel-truth for fonts or equations.
@@ -43,13 +44,13 @@ bash scripts/setup.sh
 
 Installs `pptxgenjs` (pnpm, from `package.json`), a uv venv at `.tools/venv` with
 `python-pptx`/`pymupdf`/`pillow`, checks `pandoc`, and uses system LibreOffice or
-extracts a LibreOffice AppImage into `.tools/`. Needs **node**, **uv** (or pip),
+extracts a LibreOffice AppImage into `.tools/`. Needs **node**, **pnpm**, and **uv**,
 and **pandoc** (only for equations) on PATH.
 
 ## Build a deck
 
 ```js
-const { makeDeck } = require("./lib/deck");
+const { makeDeck } = require("/path/to/editable-pptx/lib/deck");
 const D = makeDeck({ title: "My Talk", author: "me", runningHead: "My Talk · 2026" });
 
 const s = D.slide();

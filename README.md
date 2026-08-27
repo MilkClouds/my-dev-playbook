@@ -12,7 +12,7 @@ Personal development environment setup. Linux and macOS focused.
 - **[tools/](tools/)**: runnable code.
   - **[whalebin/](tools/whalebin/)**: wrap binaries that live in a Docker image as host CLIs via Charliecloud.
   - **[progress-utils/](tools/progress-utils/)**: oh-my-zsh plugin for progress bars on cp/mv/rm/tar/wget.
-- **[skills/](skills/)**: Claude Code skills, distributed as marketplace plugins.
+- **[skills/](skills/)**: Portable Agent Skills for Claude Code, Codex, and other compatible agents.
 - **[commands/](commands/)**: Claude Code slash commands (e.g. `/sf`), installed by copying into `~/.claude/commands/`.
 
 ## Setup
@@ -40,7 +40,7 @@ Optional, scenario-specific setups. Apply only when you need them.
 
 ## Skills
 
-This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.json`); each skill in [`skills/`](skills/) ships as its own plugin.
+The skills in [`skills/`](skills/) follow the open Agent Skills format and install across compatible agents with the `skills` CLI.
 
 - **sync-repos**: Cherry-pick commits between two git remotes with unrelated histories, preserving authorship.
 - **concise-writing**: Write and revise non-trivial documents for concise, precise, readable, and logically structured communication, with separate reviewer validation.
@@ -48,19 +48,31 @@ This repo is a Claude Code **plugin marketplace** (`.claude-plugin/marketplace.j
 
 ### Installing skills
 
-Install via the `claude plugin` CLI. Both `marketplace add` and `install` default to **user** scope; keep the marketplace and the plugin on the **same** scope. Pick one:
+Install a skill into all detected agents:
 
 ```bash
-# Project scope — wire a skill into one repo (committed to its .claude/settings.json, travels with the repo)
-claude plugin marketplace add MilkClouds/my-dev-playbook --scope project
-claude plugin install editable-pptx@my-dev-playbook --scope project
+# Project scope
+npx skills add MilkClouds/my-dev-playbook --skill editable-pptx
 
-# User scope — available in every project on this machine
-claude plugin marketplace add MilkClouds/my-dev-playbook
-claude plugin install editable-pptx@my-dev-playbook
+# User scope
+npx skills add -g MilkClouds/my-dev-playbook --skill editable-pptx
 ```
 
-Swap `editable-pptx` for any skill above. To remove, use `claude plugin marketplace remove my-dev-playbook`; this also updates the global `known_marketplaces.json` registry, which hand-deleting the cache dir does not.
+Swap `editable-pptx` for any skill above. Use `--agent <name>` to target a specific supported agent instead of all detected agents.
+
+```bash
+# List installed skills
+npx skills list
+npx skills list -g
+
+# Update skills
+npx skills update
+npx skills update -g
+
+# Remove a skill
+npx skills remove editable-pptx
+npx skills remove -g editable-pptx
+```
 
 ## Commands
 

@@ -9,9 +9,9 @@ Cherry-pick commits between two git remotes that have no shared history, preserv
 
 ## Configuration
 
-Two files in `.claude/sync/` control this skill:
+Two files in `.sync-repos/` control this skill:
 
-### `.claude/sync/state.json` (required)
+### `.sync-repos/state.json` (required)
 
 Tracks which remotes to sync and the last synced commit on each side. If this file doesn't exist, start with Initial Setup (below).
 
@@ -29,7 +29,7 @@ Tracks which remotes to sync and the last synced commit on each side. If this fi
 }
 ```
 
-### `.claude/sync/guide.md` (optional)
+### `.sync-repos/guide.md` (optional)
 
 Natural-language guidelines for private-to-public sensitivity review. Read this file during Phase 2 to decide which commits need modification or exclusion. Without it, rely on general judgment and inform the user that this file can be created for more precise guidance.
 
@@ -39,21 +39,21 @@ This skill has 4 phases with 3 approval gates. The user must explicitly approve 
 
 ### Initial Setup
 
-Run this when `.claude/sync/state.json` doesn't exist.
+Run this when `.sync-repos/state.json` doesn't exist.
 
 1. List configured git remotes (`git remote -v`).
 2. Ask the user which two remotes to sync and their target branches.
 3. Show the latest commits on each target branch.
 4. Ask the user for the last synced commit hash on each side: the point after which changes are unsynced. If the repos were never synced, pick a known common state (e.g. the initial public release commit).
-5. Write `.claude/sync/state.json` after user confirms the contents.
+5. Write `.sync-repos/state.json` after user confirms the contents.
 
 ### Phase 1: Confirm Context
 
-1. Read `.claude/sync/state.json` and fetch both remotes. If the repo uses Git LFS, also run `git lfs fetch <source-remote> --all`. Cherry-pick will fail with smudge errors if LFS objects aren't cached locally.
+1. Read `.sync-repos/state.json` and fetch both remotes. If the repo uses Git LFS, also run `git lfs fetch <source-remote> --all`. Cherry-pick will fail with smudge errors if LFS objects aren't cached locally.
 2. Count new commits since last sync on each side.
 3. Present a status table showing each remote's last synced hash, current HEAD, and number of new commits.
 4. Ask the user to confirm the remotes/branches are correct and choose a direction: **(1) A → B** or **(2) B → A**.
-5. If the direction is private-to-public and `.claude/sync/guide.md` doesn't exist, mention it: "`.claude/sync/guide.md` not found. This file can provide repo-specific guidelines for identifying sensitive content. Proceeding with general-purpose review."
+5. If the direction is private-to-public and `.sync-repos/guide.md` doesn't exist, mention it: "`.sync-repos/guide.md` not found. This file can provide repo-specific guidelines for identifying sensitive content. Proceeding with general-purpose review."
 
 **Wait for explicit confirmation before continuing.**
 
@@ -63,7 +63,7 @@ Run this when `.claude/sync/state.json` doesn't exist.
 2. Check each merge commit for conflict resolution changes using `git show --diff-merges=first-parent --stat`. Merge commits with no unique diff are safe to skip (their child commits already cover the changes). Flag any with unique changes so the user can decide. See `references/git-commands.md` for details.
 3. Show the aggregate diff stat.
 4. Detect potential conflicts: files changed on the source that also changed on the target since last sync.
-5. **Private-to-public only**: read `.claude/sync/guide.md` (if present), then review each commit's diff and classify it:
+5. **Private-to-public only**: read `.sync-repos/guide.md` (if present), then review each commit's diff and classify it:
    - **Clean**: safe to publish as-is. Use normal `git cherry-pick`.
    - **Modify**: contains sensitive content that can be redacted. Use `cherry-pick --no-commit`, apply edits, then commit with preserved metadata. See `references/git-commands.md` for the exact environment variable approach.
    - **Exclude**: entirely private, should not go public. Skip it.
@@ -92,7 +92,7 @@ After user approval:
    - **Private-to-public**: The PR title and body must not mention the private org name, the word "sync", or reveal the existence of a private fork. Write the PR as if it were a normal feature/fix PR; describe the changes by their content, not their origin.
    - **PR/issue references**: Commit messages may contain `#<number>` references (e.g. `(#34)`) that point to the source repo, not the target. In the PR body, qualify these with the full `owner/repo#number` format so readers aren't misled by bare `#N` links resolving to unrelated target-repo issues.
 3. Ask the user which merge strategy they will use. Recommend **merge commit**: squash and rebase rewrite commit hashes, which complicates state tracking.
-4. Update `.claude/sync/state.json` based on the chosen strategy:
+4. Update `.sync-repos/state.json` based on the chosen strategy:
 
    **If merge commit**, update state on the sync branch before the PR is merged:
    - Set the target remote's hash to the sync branch HEAD (the last cherry-picked commit).
@@ -102,7 +102,7 @@ After user approval:
    **If squash or rebase**, update state after the user merges the PR:
    - Do NOT update state on the sync branch (these strategies rewrite commit hashes, making sync branch references unreachable).
    - Push and show the PR link.
-   - After the user confirms the PR is merged, update `.claude/sync/state.json` on the target's main branch; set both hashes to their respective remote HEADs post-merge. Commit and push.
+   - After the user confirms the PR is merged, update `.sync-repos/state.json` on the target's main branch; set both hashes to their respective remote HEADs post-merge. Commit and push.
 
 ## Key Principles
 

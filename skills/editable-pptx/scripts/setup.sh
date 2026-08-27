@@ -18,7 +18,8 @@ if command -v uv >/dev/null 2>&1; then
   uv pip install --python "$TOOLS/venv/bin/python" python-pptx pymupdf pillow >/dev/null
   echo "      venv: $TOOLS/venv  (use: $TOOLS/venv/bin/python scripts/render.py ...)"
 else
-  echo "      WARN: uv not found — install uv, or pip-install python-pptx pymupdf pillow yourself"
+  echo "      ERROR: uv not found — install uv and rerun setup" >&2
+  exit 1
 fi
 
 echo "[3/4] pandoc (native equations)"
@@ -40,4 +41,4 @@ else
   echo "      extracted to $TOOLS/squashfs-root"
 fi
 
-echo "done. Try:  node examples/example_deck.js  (see README.md)"
+echo "done. Try:  node examples/example_deck.js  (see SKILL.md)"

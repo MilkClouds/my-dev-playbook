@@ -4,7 +4,7 @@
     "name": "MilkClouds"
   },
   "metadata": {
-    "description": "MilkClouds' personal dev playbook — reusable Claude Code skills.",
+    "description": "MilkClouds' personal dev playbook — portable Agent Skills packaged for Claude Code.",
     "version": "0.5.0"
   },
   "plugins": [

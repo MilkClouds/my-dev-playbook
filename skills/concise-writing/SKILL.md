@@ -25,5 +25,5 @@ description: Write or revise non-trivial documents for concise, precise, readabl
 ## Review
 
 - Check the main-text/appendix/remove triage, concision and precision, terminology, logical flow, section quality and depth, navigation, and choice of prose, Markdown, tables, or figures.
-- For every non-trivial document, spawn a separate reviewer subagent. Give it the document and this skill, and require exactly one outcome: `ACCEPT`, or a concrete list of material violations tied to these rules. The reviewer must not rewrite the document or reject on subjective preference.
+- For every non-trivial document, delegate review to a separate reviewer agent with a fresh context. Give it only the document and this skill, and require exactly one outcome: `ACCEPT`, or a concrete list of material violations tied to these rules. The reviewer must not rewrite the document or reject on subjective preference.
 - If violations are returned, revise the document and send it back to the reviewer. Repeat until it returns `ACCEPT`; do not present the document as complete before acceptance.
