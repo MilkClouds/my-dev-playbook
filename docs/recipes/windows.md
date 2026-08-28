@@ -77,6 +77,14 @@ Once installed, each app updates itself. Official installers work equally well; 
 - Games / entertainment: `steam`
 - Mobile dev: `androidstudio` (`scrcpy` is in the CLI section above)
 
+## WSL 2 resource tuning
+
+WSL 2 defaults can crowd Windows RAM and let distro disks grow far beyond their typical workload. Configure both memory and disk limits per machine instead of leaving the defaults or copying fixed values.
+
+- **RAM:** Tune `memory`, `swap`, and `autoMemoryReclaim` in `.wslconfig`. Preserve headroom for Windows, treat swap as a short pressure buffer, and return idle Linux cache to the host.
+- **Disk:** Set `defaultVhdSize` to a reasonable ceiling before creating distros. VHDs grow dynamically rather than preallocating the ceiling, and this setting does not shrink existing disks. Keep logical capacity separate from physical VHDX reclamation; avoid unsafe sparse conversion.
+- **Validation:** Check Task Manager, `free -h`, and `df -h` under real workloads. Revisit the limits after hardware, workload, container use, or WSL changes, and back up before disk operations.
+
 ## Shell *(minimal)*
 
 [PowerShell 7](https://github.com/PowerShell/PowerShell) is the Windows-native shell; install if not already (replaces stock Windows PowerShell 5.1). Run inside [Windows Terminal](https://github.com/microsoft/terminal), bundled on Win 11.

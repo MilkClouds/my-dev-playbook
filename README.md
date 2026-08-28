@@ -28,7 +28,7 @@ Start with common, then add environment-specific setup.
 Optional, scenario-specific setups. Apply only when you need them.
 
 - **[docs/recipes/mobile-tmux/](docs/recipes/mobile-tmux/)**: Authenticated mobile browser access to tmux via `ttyd` + cookie auth proxy.
-- **[docs/recipes/windows.md](docs/recipes/windows.md)**: Windows 11 package install method decisions (installer / pixi / choco). *Experimental.*
+- **[docs/recipes/windows.md](docs/recipes/windows.md)**: Windows 11 package install decisions and WSL 2 resource-tuning principles. *Experimental.*
 - **[docs/recipes/discord-task-notifications/](docs/recipes/discord-task-notifications/)**: Stop / Notification / UserPromptSubmit hooks that post Discord embeds when Claude Code finishes a long task. Debounced to silence when you're at the terminal; per-turn token + USD cost via ccusage pricing catalog.
 - **[docs/recipes/codex-discord-task-notifications/](docs/recipes/codex-discord-task-notifications/)**: Self-contained Codex `notify` handler for debounced Discord turn-completion alerts. Uses Node built-ins only.
 - **[docs/recipes/pretty-git-diffs/](docs/recipes/pretty-git-diffs/)**: Syntax-highlighted git diffs via delta + lazygit, across the CLI, the lazygit TUI, and inside Claude Code's `!` bash (with the non-TTY color workaround).
