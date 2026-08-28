@@ -81,7 +81,9 @@ Once installed, each app updates itself. Official installers work equally well; 
 
 WSL 2 defaults can crowd Windows RAM and let distro disks grow far beyond their typical workload. Configure both memory and disk limits per machine instead of leaving the defaults or copying fixed values.
 
-- **RAM:** Tune `memory`, `swap`, and `autoMemoryReclaim` in `.wslconfig`. Preserve headroom for Windows, treat swap as a short pressure buffer, and return idle Linux cache to the host.
+Keep WSL up to date. Current releases improve resource-management defaults, including automatic reclamation of idle Linux cache.
+
+- **RAM:** Tune `memory` and `swap` in `.wslconfig`. Preserve headroom for Windows and treat swap as a short pressure buffer.
 - **Disk:** Set `defaultVhdSize` to a reasonable ceiling before creating distros. VHDs grow dynamically rather than preallocating the ceiling, and this setting does not shrink existing disks. Keep logical capacity separate from physical VHDX reclamation; avoid unsafe sparse conversion.
 - **Validation:** Check Task Manager, `free -h`, and `df -h` under real workloads. Revisit the limits after hardware, workload, container use, or WSL changes, and back up before disk operations.
 
