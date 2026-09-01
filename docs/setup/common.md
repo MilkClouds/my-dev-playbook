@@ -131,7 +131,7 @@ Agent CLIs, their configuration, and shared utilities.
 - **[Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)** *(minimal)*: Anthropic's first-party agentic coding CLI.
 - **[claude-pace](https://github.com/Astro-Han/claude-pace)** *(minimal)*: Status line for quota pace, context use, and Git changes.
 - **Configs** *(minimal)*: Apply after installing Claude Code.
-  - [`claude-plugins.json`](../../configs/claude-plugins.json): enables [claude-pace](https://github.com/Astro-Han/claude-pace), [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), [fetch-bib](https://github.com/MilkClouds/fetch-bib), and the [Codex plugin](https://github.com/openai/codex-plugin-cc). The Codex plugin requires the Codex stack below.
+  - [`claude-plugins.json`](../../configs/claude-plugins.json): enables [claude-pace](https://github.com/Astro-Han/claude-pace), [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), and the [Codex plugin](https://github.com/openai/codex-plugin-cc). The Codex plugin requires the Codex stack below.
   - [`mcp-servers.json`](../../configs/mcp-servers.json): unpinned Node MCP servers. Replace credential placeholders before use.
   - [`claude-settings.json`](../../configs/claude-settings.json): merge into `~/.claude/settings.json`.
   - [`CLAUDE.md`](../../configs/CLAUDE.md): global instructions and environment constraints.
@@ -148,5 +148,7 @@ Agent CLIs, their configuration, and shared utilities.
 
 ### Shared agent tools
 
-- **[Paperstack skill](https://github.com/MilkClouds/paperstack/tree/main/skills/paperstack)** *(as-needed)*: After installing the CLI, run `npx skills add MilkClouds/paperstack --skill paperstack -g -a claude-code -a codex -y`.
+- **[concise-writing](../../skills/concise-writing/SKILL.md)** *(as-needed)*: Concise, precise, and structured writing workflow. Install with `npx skills add MilkClouds/my-dev-playbook --skill concise-writing -g -a claude-code -a codex -y`.
+- **[fetch-bib](https://github.com/MilkClouds/fetch-bib)** *(as-needed)*: Source-backed BibTeX workflow using Paperstack. After installing the Paperstack CLI, run `npx skills add MilkClouds/fetch-bib --skill fetch-bib -g -a claude-code -a codex -y`.
+- **[Paperstack skill](https://github.com/MilkClouds/paperstack/tree/main/skills/paperstack)** *(as-needed)*: Corpus and paper-inspection workflows. Install with `npx skills add MilkClouds/paperstack --skill paperstack -g -a claude-code -a codex -y`.
 - **[agf](https://github.com/subinium/agf)** *(full)*: Finds and manages sessions across both CLIs.
