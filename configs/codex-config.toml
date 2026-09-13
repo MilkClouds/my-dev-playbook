@@ -2,9 +2,7 @@ personality = "pragmatic"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
 
-model = "gpt-5.6-sol"
-model_reasoning_effort = "xhigh"
-plan_mode_reasoning_effort = "xhigh"
+model = "gpt-6-astra"
 service_tier = "default"
 
 [features]

@@ -3,7 +3,6 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "effortLevel": "xhigh",
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "env": {
