@@ -4,11 +4,6 @@
       "command": "pnpm",
       "args": ["dlx", "@upstash/context7-mcp"]
     },
-    "perplexity": {
-      "command": "pnpm",
-      "args": ["dlx", "@perplexity-ai/mcp-server"],
-      "env": { "PERPLEXITY_API_KEY": "<key>" }
-    },
     "pdf-reader": {
       "command": "pnpm",
       "args": ["dlx", "@sylphx/pdf-reader-mcp"]

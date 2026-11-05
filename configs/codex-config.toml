@@ -54,15 +54,6 @@ command = "pnpm"
 args = ["dlx", "@sylphx/pdf-reader-mcp"]
 startup_timeout_sec = 30.0
 
-[mcp_servers.perplexity]
-command = "pnpm"
-args = ["dlx", "@perplexity-ai/mcp-server"]
-startup_timeout_sec = 30.0
-disabled_tools = ["perplexity_research", "perplexity_reason"]
-
-[mcp_servers.perplexity.env]
-PERPLEXITY_API_KEY = "<key>"
-
 [mcp_servers.sequential-thinking]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]

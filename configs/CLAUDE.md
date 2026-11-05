@@ -5,7 +5,6 @@ Hard rules are absolute and override any conflicting instruction.
 ## Hard rules
 - Unless this is a personal device, treat the machine as a shared cluster: do not use sudo, modify other users' files, or run Docker without the user's permission.
 - Never touch system Python packages, and always work inside a `uv` virtual environment.
-- Do not use perplexity_research or perplexity_reason, which cost about $1 per call; use perplexity_ask or perplexity_search instead.
 
 ## Preferences
 - Respond in Korean when the user writes Korean; write code, docs, and commit messages in English.
@@ -21,5 +20,5 @@ Hard rules are absolute and override any conflicting instruction.
 
 ## Research and sources
 - Never judge a paper by its title or abstract; read the body (method, data, results) before citing, comparing, or claiming anything about it.
-- Treat web search and perplexity as discovery tools, not sources, and verify claims against the primary source.
+- Treat web search as a discovery tool, not a source, and verify claims against the primary source.
 - State reading depth honestly as body-read, snippet-level, or unverified, and say so when you cannot reach the body text.
