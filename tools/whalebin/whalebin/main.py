@@ -1,11 +1,6 @@
 """whalebin: expose docker image binaries as host CLI commands.
 
-Equivalent of `pixi global install` / `uv tool install` for docker images.
-Uses Charliecloud (`ch-run`) as the container runtime: rootless and daemonless.
-Wrappers bind $HOME and the caller's $PWD at the same paths (Charliecloud binds
-/tmp itself), so binaries inside the image behave as if host-installed.
-Additional cluster paths (NFS subtrees, scratch volumes) can be bound at
-install time via --mount.
+Like `pixi global install` / `uv tool install`, with Charliecloud's `ch-run` as the rootless runtime.
 """
 from __future__ import annotations
 
@@ -63,12 +58,8 @@ def save_manifest(data: dict) -> None:
 
 def wrapper_content(env_name: str, image: str, bin_name: str, mounts: list[str]) -> str:
     bind_lines = "".join(f"    --bind {shlex.quote(m)} \\\n" for m in mounts)
-    # `: ${VAR:=...}` only sets the storage path if the caller hasn't already.
-    # Baked here so cluster nodes don't need shell-rc setup for ch-image to find
-    # an NFS-shared storage; node-local /var/tmp default would fragment across nodes.
-    # ch-run binds only /tmp by default, and a bind target must exist in the image;
-    # --write-fake (tmpfs overlay, image untouched) lets ch-run create $HOME, $PWD
-    # and --mount targets.
+    # Storage defaults to $HOME (NFS on clusters) so nodes share images without shell-rc setup.
+    # ch-run binds only /tmp and needs bind targets in the image; --write-fake lets it create them.
     return f"""{WRAPPER_HEADER} (env: {env_name}, image: {image})
 : "${{CH_IMAGE_STORAGE:=$HOME/.cache/charliecloud}}"
 export CH_IMAGE_STORAGE
