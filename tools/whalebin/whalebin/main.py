@@ -1,10 +1,11 @@
 """whalebin: expose docker image binaries as host CLI commands.
 
 Equivalent of `pixi global install` / `uv tool install` for docker images.
-Uses Charliecloud (`ch-run`) as the container runtime: rootless, daemonless,
-auto-mounts $HOME / $PWD / /tmp, so binaries inside the image behave as if
-host-installed. Additional cluster paths (NFS subtrees, scratch volumes)
-can be bound at install time via --mount.
+Uses Charliecloud (`ch-run`) as the container runtime: rootless and daemonless.
+Wrappers bind $HOME and the caller's $PWD at the same paths (Charliecloud binds
+/tmp itself), so binaries inside the image behave as if host-installed.
+Additional cluster paths (NFS subtrees, scratch volumes) can be bound at
+install time via --mount.
 """
 from __future__ import annotations
 
@@ -65,25 +66,25 @@ def wrapper_content(env_name: str, image: str, bin_name: str, mounts: list[str])
     # `: ${VAR:=...}` only sets the storage path if the caller hasn't already.
     # Baked here so cluster nodes don't need shell-rc setup for ch-image to find
     # an NFS-shared storage; node-local /var/tmp default would fragment across nodes.
+    # ch-run binds only /tmp by default, and a bind target must exist in the image;
+    # --write-fake (tmpfs overlay, image untouched) lets ch-run create $HOME, $PWD
+    # and --mount targets.
     return f"""{WRAPPER_HEADER} (env: {env_name}, image: {image})
 : "${{CH_IMAGE_STORAGE:=$HOME/.cache/charliecloud}}"
 export CH_IMAGE_STORAGE
+binds=(--bind "$HOME")
+case "$PWD" in
+    /|"$HOME"|"$HOME"/*|/tmp|/tmp/*) ;;
+    *) binds+=(--bind "$PWD") ;;
+esac
 exec ch-run \\
+    --write-fake \\
     --unset-env=PATH --set-env="PATH={CONTAINER_PATH}" \\
     --cd "$PWD" \\
+    "${{binds[@]}}" \\
 {bind_lines}    {shlex.quote(image)} -- \\
     {shlex.quote(bin_name)} "$@"
 """
-
-
-def _ch_run_argv(image: str, bin_name: str, mounts: list[str], args: list[str]) -> list[str]:
-    """Build ch-run argv equivalent to what the wrapper would exec, for `whalebin run`."""
-    argv = ["ch-run", "--unset-env=PATH", f"--set-env=PATH={CONTAINER_PATH}",
-            "--cd", os.getcwd()]
-    for m in mounts:
-        argv.extend(["--bind", m])
-    argv.extend([image, "--", bin_name, *args])
-    return argv
 
 
 def _is_our_wrapper(path: Path) -> bool:
@@ -318,9 +319,9 @@ def cmd_edit(args: argparse.Namespace) -> None:
 def cmd_run(args: argparse.Namespace) -> None:
     _require_backend()
     cfg = _require_env(load_manifest(), args.env)
-    argv = _ch_run_argv(cfg["image"], args.bin,
-                        cfg.get("mounts", DEFAULT_MOUNTS), args.args)
-    os.execvp(argv[0], argv)
+    # Run the wrapper text itself so `run` and installed wrappers cannot drift.
+    script = wrapper_content(args.env, cfg["image"], args.bin, cfg.get("mounts", DEFAULT_MOUNTS))
+    os.execvp("bash", ["bash", "-c", script, args.bin, *args.args])
 
 
 def main() -> None:
@@ -332,7 +333,7 @@ def main() -> None:
     pi.add_argument("--image", required=True, help="docker image (e.g. texlive/texlive:latest-full)")
     pi.add_argument("--bin", required=True, help="comma-separated binary names to expose")
     pi.add_argument("--mount", action="append",
-                    help="extra bind mount, repeatable (charliecloud auto-mounts $HOME/$PWD/$tmp)")
+                    help="extra bind mount SRC[:DST], repeatable ($HOME, $PWD and /tmp are always bound)")
     pi.set_defaults(func=cmd_install)
 
     pl = sub.add_parser("list", help="list installed environments")

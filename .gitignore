@@ -2,3 +2,5 @@
 
 # skill-creator eval workspaces (local benchmarks/records)
 skills/*-workspace/
+
+__pycache__/
